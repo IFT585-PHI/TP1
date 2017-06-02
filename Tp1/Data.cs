@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Tp1
 {
-    class Weft
+    public class Weft
     {
         /* 
          *  

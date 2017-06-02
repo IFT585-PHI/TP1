@@ -7,7 +7,13 @@
         private  bool pretEmmetreSource = true;
         private  bool recuDestination = false;
 
-        
+        private string envoieDestination;
+        private bool isCodeNew;
+
+        ///<Summary> 
+        ///Transfer the current Weft to the support.
+        ///</Summary>
+        ///<returns> False if the support is not ready and the Weft wasn't transfered and True if the Weft was transfered.</returns>
         public  bool TransferTrameToSupport(Weft trame)
         {
             if (pretEmmetreSource){
@@ -20,6 +26,10 @@
             }
         }
 
+        ///<Summary> 
+        ///Transfer the current Weft from one machine to the other.
+        ///</Summary>
+        ///<returns> False if the transfer wasn't reay and the Weft wasn't transfered and True if the Weft was transfered.</returns>
         public bool TransferTrameToDestination()
         {
             if (!pretEmmetreSource && !recuDestination)
@@ -35,11 +45,19 @@
             }
         }
 
+        ///<Summary>
+        ///Check to see if there is something to be recieved.
+        ///</Summary>
+        ///<returns> False there is nothing and True if we can read something.</returns>
         public bool ReadyToReadSourceMessage()
         {
             return recuDestination;
         }
 
+        ///<Summary> 
+        ///Reads the Weft that was recieved.
+        ///</Summary>
+        ///<returns> The Weft that was recieved.</returns>
         public Weft GetMessageFromSource()
         {
             recuDestination = false;

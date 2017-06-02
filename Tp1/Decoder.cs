@@ -6,8 +6,12 @@ using System.Threading.Tasks;
 
 namespace Tp1
 {
-    class Decoder
+    public class Decoder
     {
+        public Decoder()
+        {
+
+        }
         public string Decode(Weft trame, string mode)
         {
             return "0";

@@ -15,30 +15,42 @@ namespace Tp1
 
         StreamWriter sw;
         Decoder decoder;
-        PhysicalSupport support;
+        InterThreadSynchronizer synchronizer;
 
-        public Receiver(string outputPath, PhysicalSupport support)
+        public Receiver(string outputPath, InterThreadSynchronizer synchronizer)
         {
             sw = new StreamWriter(outputPath);
             decoder = new Decoder();
-            this.support = support;
+            this.synchronizer = synchronizer;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Receiving()
         {
-            while
-            string message = decoder.Decode(trame, "thingy");
-            string code;
-            if (String.IsNullOrEmpty(message))
+            while (true)
             {
-                code = ERROR_CODE;
-            } else
-            {
-                sw.Write(message);
-                code = SUCCES_CODE;
-            }    
+                while (!synchronizer.ReadyToReadSourceMessage())
+                {
+                }
 
-            
+                Weft trame = synchronizer.GetMessageFromSource();
+                string message = decoder.Decode(trame, "thingy");
+                string code;
+
+                if (String.IsNullOrEmpty(message))
+                {
+                    code = ERROR_CODE;
+                }
+                else
+                {
+                    sw.Write(message);
+                    code = SUCCES_CODE;
+                }
+
+
+            }
         }
 
        
