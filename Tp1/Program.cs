@@ -38,16 +38,12 @@ namespace Tp1
             }
         }
 
-
         static void Main(string[] args)
         {
             Inputs inputs = new Inputs();
-            inputs.ReadInputs();
-            
-            
+            inputs.ReadInputs();            
 
         }
-
         
     }
 }
