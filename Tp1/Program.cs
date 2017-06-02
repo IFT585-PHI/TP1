@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 namespace Tp1
 {
     class Program
-    {
+    {     
         static void Main(string[] args)
         {
+            Inputs inputs = new Inputs();
+            inputs.ReadInputs();            
+
         }
+        
     }
 }
