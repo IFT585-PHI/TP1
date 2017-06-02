@@ -8,18 +8,15 @@ namespace Tp1
 {
     class Program
     {
-
         const string INPUTS_FILENAME = "../../inputs.txt";
         static int BufferSize;
         static int Delay;
         static string SourceFileName;
         static string DestinationFileName;
 
-
         static void Main(string[] args)
         {
             ReadInputs();
-
 
         }
 
@@ -27,6 +24,7 @@ namespace Tp1
         {
             try
             {
+                //Read the inputs for the program
                 System.IO.StreamReader file = new System.IO.StreamReader(INPUTS_FILENAME);
                 BufferSize = int.Parse(file.ReadLine());
                 Delay = int.Parse(file.ReadLine());
