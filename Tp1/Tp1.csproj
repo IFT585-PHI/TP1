@@ -51,6 +51,8 @@
     <Compile Include="Simulator.cs" />
     <Compile Include="Transmitter.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="Hamming.cs" />
+    <Compile Include="InterThreadSynchronizer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
