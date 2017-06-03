@@ -12,7 +12,7 @@ namespace Tp1
         {
 
         }
-        public string Decode(Weft trame, string mode)
+        public string Decode(Frame trame, string mode)
         {
             return "0";
         }

@@ -6,16 +6,15 @@ using System.Threading.Tasks;
 
 namespace Tp1
 {
-    public class Weft
+    public class Frame
     {
         /* 
          *  
          */
-        public const int WEFT_SIZE = 7;
-        string Message { get; set; }
-        int WeftId { get; set; }
-        int DetectorCode { get; set; }
-        int CorrectorCode { get; set; }
+        //public const int WEFT_SIZE = 7;
+        public char[] Message = new char[1024];
+        public int FrameId { get; set; }
+        public int Code { get; set; }
     }
 
     struct Inputs

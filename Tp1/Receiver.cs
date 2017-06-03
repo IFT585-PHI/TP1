@@ -35,7 +35,7 @@ namespace Tp1
                 {
                 }
 
-                Weft trame = synchronizer.GetMessageFromSource();
+                Frame trame = synchronizer.GetMessageFromSource();
                 string message = decoder.Decode(trame, "thingy");
                 string code;
 
