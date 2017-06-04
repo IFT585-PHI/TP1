@@ -2,3 +2,9 @@ C:\Users\alexb\Desktop\IFT585-TP1\Tp1\Tp1\bin\Debug\Tp1.exe.config
 C:\Users\simad\Desktop\TP1 Telematique\TP1\Tp1\bin\Debug\Tp1.exe.config
 C:\Users\alexb\Documents\GitHub\TP1\Tp1\bin\Debug\Tp1.exe.config
 D:\Documents\Informatique\IFT585\TP1\Tp1\bin\Debug\Tp1.exe.config
+C:\Users\Ian\Desktop\IFT585 TP1\TP1\Tp1\bin\Debug\Tp1.exe.config
+C:\Users\Ian\Desktop\IFT585 TP1\TP1\Tp1\obj\Debug\Tp1.csprojResolveAssemblyReference.cache
+C:\Users\Ian\Desktop\IFT585 TP1\TP1\Tp1\bin\Debug\Tp1.exe
+C:\Users\Ian\Desktop\IFT585 TP1\TP1\Tp1\bin\Debug\Tp1.pdb
+C:\Users\Ian\Desktop\IFT585 TP1\TP1\Tp1\obj\Debug\Tp1.exe
+C:\Users\Ian\Desktop\IFT585 TP1\TP1\Tp1\obj\Debug\Tp1.pdb
