@@ -43,13 +43,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data.cs" />
+    <Compile Include="Decoder.cs" />
+    <Compile Include="InterThreadSynchronizer.cs" />
     <Compile Include="PhysicalSupport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Receiver.cs" />
     <Compile Include="Simulator.cs" />
     <Compile Include="Transmitter.cs" />
-    <Compile Include="Weft.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
