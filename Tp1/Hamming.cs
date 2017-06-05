@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 //Author : Iannick Langevin
 
@@ -21,12 +20,15 @@ namespace Tp1
             {
                 byteList.Insert(i, '0');
             }
+            //Insert the last bit corrector for 2 errors detection
+            byteList.Add('0');
 
             //Put the respective value for each bits corrector
             foreach (int i in indexList)
             {
                 byteList[i] = CalculateBitCorrectorForPos(byteList, i + 1);
             }
+            byteList[byteList.Count-1] = CalculateLastBitCorrector(byteList);
 
             return Util.ListToBinary(byteList);
         }
@@ -35,9 +37,9 @@ namespace Tp1
         /// <returns>string of char</returns> 
         public static string Decode(string codedData)
         {
-            List<char> byteList = new List<char>();
-            byteList.AddRange(codedData);
+            List<char> byteList = new List<char>(codedData);
             List<int> indexBitCorrector = FindAllIndexBitCorrector(byteList);
+            indexBitCorrector.Add(indexBitCorrector.Count - 1);
 
             // Remove the bit corrector from the binary string, starting from the end
             indexBitCorrector.Reverse();
@@ -52,39 +54,61 @@ namespace Tp1
         /// <param name="data">binary string</param>
         public static Boolean Validate(string codedData)
         {
-            List<char> byteList = new List<char>();
-            byteList.AddRange(codedData);
+            List<char> byteList = new List<char>(codedData);
+
+            Char newLastBitValue = CalculateLastBitCorrector(byteList);
+            Char oldLastBitValue = byteList.Last();
+
+            //Remove it because it was initialized at 0 and may affect other bit corrector
+            byteList.RemoveAt(byteList.Count - 1);
+
             List<int> indexBitCorrector = FindAllIndexBitCorrector(byteList);
             List<int> indexBitCorrectorError = FindBitCorrectorError(byteList, indexBitCorrector);
+            int bitCorrectorErrorCount = indexBitCorrectorError.Count;
 
-            // First validation
-            // If there is only one bit corrector error, the bit itself is the error
-            if (indexBitCorrectorError.Count == 1)
+            // If there is 0 bit error detected, it means there is no error UNLESS our last bit corrector flipped
+            if (bitCorrectorErrorCount == 0 && oldLastBitValue == newLastBitValue)
             {
+                return true;
+            }
+            // If there is 1 bit error detected, it means there is one error UNLESS our last bit corrector didnt flipped
+            else if (bitCorrectorErrorCount == 1 && oldLastBitValue != newLastBitValue)
+            {
+                // Then the error is the bit corrector itself
                 int indexBadBit = indexBitCorrectorError[0];
                 byteList[indexBadBit] = ((byteList[indexBadBit] == '0') ? '1' : '0');
+
+                return true;
             }
+
             // If there is more than 2 bits corrector error, add them to get your faulty index
-            else if (indexBitCorrectorError.Count >= 2)
+            if (bitCorrectorErrorCount >= 2)
             {
-                int indexBadBit = indexBitCorrectorError.Sum() + 1;
-                if(indexBadBit > byteList.Count)
+                int indexBadBit = indexBitCorrectorError.Sum() + indexBitCorrectorError.Count() - 1;
+                
+                // This means we have at least 2 errors
+                if (indexBadBit > byteList.Count - 1)
                 {
                     return false;
-                }
+                }             
                 byteList[indexBadBit] = ((byteList[indexBadBit] == '0') ? '1' : '0');
+
+                //Add the last bit corrector to get the new last bit corrector value
+                byteList.Add(oldLastBitValue);
+                newLastBitValue = CalculateLastBitCorrector(byteList);
+                byteList.RemoveAt(byteList.Count - 1);
+
+                indexBitCorrectorError = FindBitCorrectorError(byteList, indexBitCorrector);
+
+                // If the last bit corrector didn't flip and there is no more error,
+                // we have correctly fixed our error
+                if (oldLastBitValue == newLastBitValue && indexBitCorrectorError.Count == 0)
+                {
+                    return true;
+                }
             }
 
-            //2e vérif
-            indexBitCorrector = FindAllIndexBitCorrector(byteList);
-            indexBitCorrectorError = FindBitCorrectorError(byteList, indexBitCorrector);
-            // If there is a second error, we can't do anything about it
-            if(indexBitCorrectorError.Count != 0)
-            {
-                return false;
-            }
-
-            return true;
+            return false;
         }
 
         private static List<int> FindAllIndexBitCorrector(List<char> byteList)
@@ -106,39 +130,48 @@ namespace Tp1
 
         /*
          * https://en.wikipedia.org/wiki/Hamming_code
-         *      0   1   2   3   4   5   6   7   8   9   10  11
+         *      1   2   3   4   5   6   7   8   9   10  11 12 LA
          * P1   X       X       X       X       X       X
          * P2       X   X           X   X           X   X
          * P3               X   X   X   X                   X
          * P4                               X   X   X   X   X
+         * LA   X   X   X   X   X   X   X   X   X   X   X   X
          */
         private static char CalculateBitCorrectorForPos(List<char> byteList, int noBits)
         {
             int somme = 0;
             int index = noBits - 1;
 
-           // Console.WriteLine(noBits);
-
             while (index < byteList.Count)
             {        
-                // Calculate adjacents bits
+                // Calculate adjacents bits                              
                 for (int i = 0; i < noBits && index + i < byteList.Count; i++)
                 {
                     // Don't want to add the corrector bit value when decoded because they were all initialized at 0
                     if(index + i != noBits - 1)
                     {
-                        //Console.Write(index + i + " ");
                         somme += (int)Char.GetNumericValue(byteList[index + i]);
                     }
-                }
+                        
+                }       
 
                 // Jump to the next segment
                 index += 2 * noBits;
             }
 
-            //Console.WriteLine();
+            return (somme % 2).ToString()[0];
+        }
 
-            char a = (somme % 2).ToString()[0];
+        private static char CalculateLastBitCorrector(List<char> byteList)
+        {
+            int somme = 0;
+
+            // Calculate all bits
+            for (int i = 0; i < byteList.Count - 1; i++)
+            {
+                somme += (int)Char.GetNumericValue(byteList[i]);
+            }
+
             return (somme % 2).ToString()[0];
         }
 
@@ -148,6 +181,7 @@ namespace Tp1
 
             foreach (int noBits in indexBitCorrector)
             {
+                char a = CalculateBitCorrectorForPos(byteList, noBits + 1);
                 if (byteList[noBits] != CalculateBitCorrectorForPos(byteList, noBits + 1))
                 {
                     result.Add(noBits);
