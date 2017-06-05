@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -58,9 +58,6 @@ namespace Tp1
             Random r = new Random();
             int ra = r.Next(0, codedData.Length - 1);
             InjectErrorAtPosition(ref codedData, ra);
-
-            Console.WriteLine(ra);
-            System.Threading.Thread.Sleep(100);
         }
     }
 }
