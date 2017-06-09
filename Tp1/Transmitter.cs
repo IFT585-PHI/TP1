@@ -108,9 +108,5 @@ namespace Tp1
             }
         }
 
-        public void getFrameFromReceiver()
-        {
-
-        }
     }
 }

@@ -8,14 +8,14 @@ namespace Tp1
         {
 
             InterThreadSynchronizer machine1Synchronizer = new InterThreadSynchronizer();
-            InterThreadSynchronizer machine2Synchronizer = new InterThreadSynchronizer();
             Inputs inputs = new Inputs();
             inputs.ReadInputs();
 
-            PhysicalSupport support = new PhysicalSupport(machine1Synchronizer, machine2Synchronizer);
+            PhysicalSupport support = new PhysicalSupport(machine1Synchronizer);
             //Simulator machine1 = new Simulator(new Transmitter(machine1Synchronizer), new Receiver("test.txt", machine1Synchronizer), inputs);
             //Simulator machine2 = new Simulator(new Transmitter(machine2Synchronizer), new Receiver("test.txt", machine2Synchronizer), inputs);
-
+            Transmitter t = new Transmitter(machine2Synchronizer);
+            Receiver r = new Receiver(inputs.DestinationFileName, machine2Synchronizer);
             //support.setMachine1(machine1);
             //support.setMachine2(machine2);
             int errorsCount = 0;
