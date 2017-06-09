@@ -30,6 +30,19 @@ namespace Tp1
         {
             List<Byte> byteList = new List<Byte>();
 
+
+            if(data.Length % 8 != 0)
+            {
+                data = data.TrimStart('0');
+
+                while (data.Length % 8 != 0)
+                {
+                    data = "0" + data;
+                }
+            }
+
+
+
             for (int i = 0; i < data.Length; i += 8)
             {
                 byteList.Add(Convert.ToByte(data.Substring(i, 8), 2));
@@ -58,6 +71,8 @@ namespace Tp1
             Random r = new Random();
             int ra = r.Next(0, codedData.Length - 1);
             InjectErrorAtPosition(ref codedData, ra);
+
+            System.Threading.Thread.Sleep(100);
         }
         public static string BinaryToHexa(char[] text)
         {

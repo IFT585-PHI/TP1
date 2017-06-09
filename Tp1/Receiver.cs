@@ -11,12 +11,14 @@ namespace Tp1
     {
         StreamWriter sw;
         InterThreadSynchronizer synchronizer;
-        List<Frame> message;
+        SortedDictionary<int, Frame> message;
+        string outputpa;
 
         public Receiver(string outputPath, InterThreadSynchronizer synchronizer)
         {
-            sw = new StreamWriter(outputPath);
+            outputpa = outputPath;
             this.synchronizer = synchronizer;
+            message = new SortedDictionary<int, Frame>();
         }
 
         /// <summary>
@@ -35,16 +37,18 @@ namespace Tp1
                 if(trame.type == Type.Fin)
                 {
                     Console.WriteLine("Fin de la transmition.");
-                    sw.Write(BuildMessage());
+                    String s = BuildMessage();
+                    File.WriteAllText(outputpa, s);
                     break;
                 }
 
-                bool isValid = Hamming.Validate(trame.Message.ToString());
+
+                bool isValid = Hamming.Validate(ref trame.Message);
                 Type validationCode;
                 if (!isValid)
                 {
-                    Console.WriteLine("Trame " + trame.FrameId + "n'est pas valide.");
-                    Console.WriteLine("Envoi Nak trame #" + trame.FrameId + "to support");
+                 //   Console.WriteLine("Trame " + trame.FrameId + "n'est pas valide.");
+                  //  Console.WriteLine("Envoi Nak trame #" + trame.FrameId + "to support");
                     validationCode = Type.Nak;
                 }
                 else
@@ -63,19 +67,19 @@ namespace Tp1
 
         private void SendToSource(Frame trame)
         {
-            while (!synchronizer.TransferTrameToSupportSource(trame))
+            while (!synchronizer.TransferTrameToSupportDestination(trame))
             {
             }
         }
 
         private string BuildMessage()
         {
-            string binary = "";
-            foreach(Frame trame in message)
+            string result = string.Empty;
+            foreach(KeyValuePair<int, Frame> entry in message)
             {
-                binary += trame.Message;
+                result += Hamming.Decode(entry.Value.Message);
             }
-            return Util.BinaryToChar(binary);
+            return result;
         }
     }
 }

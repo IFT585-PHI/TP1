@@ -13,10 +13,12 @@ namespace Tp1
         public Transmitter(InterThreadSynchronizer synchronizer)
         {
             this.synchronizer = synchronizer;
+            framesTimer = new Dictionary<int, Stopwatch>();
         }
 
         public void Transmitting(Inputs input)
         {
+            Console.WriteLine("Transmitting start");
             int frameIndex = 0;
             int bufferUsedCellCount = 0;
             bool lastFrameReceived = false;
@@ -24,25 +26,37 @@ namespace Tp1
 
             string fileContent = File.ReadAllText(@input.SourceFileName);
 
-            int frameCount = fileContent.Length / 1014;
+            fileContent = Util.ListToBinary(Util.CharToBinary(fileContent));
+
+            int frameCount = fileContent.Length / 8;
             
-            if (fileContent.Length % 1024 != 0)
+            if (fileContent.Length % 8 != 0)
                 frameCount += 1;
 
-            while (frameIndex <= frameCount && lastFrameReceived)
+            fileContent = fileContent.PadLeft(8 * frameCount, '0');
+
+            while (frameIndex <= frameCount && !lastFrameReceived)
             {
-                if(bufferUsedCellCount < input.BufferSize)
+                if (bufferUsedCellCount < input.BufferSize && frameIndex <= frameCount)
                 {
                     Frame frame = new Frame();
                     frame.FrameId = frameIndex;
 
-                    string encodedMessage = Hamming.Encode(fileContent.Substring(frameIndex * 1014, 1014));
-                    
-                    frame.Message = encodedMessage.Substring(1024, 1024).ToCharArray();
+                    string encodedMessage = string.Empty;
+
+                    int i = fileContent.Length;
+                    if (frameIndex < frameCount)
+                    {
+                        encodedMessage = Hamming.Encode(fileContent.Substring(frameIndex * 8, 8));
+                        frame.Message = encodedMessage.Substring(0, 13).ToCharArray();
+                    }
+
+                    int j = encodedMessage.Length;
+
                     frame.type = (frameIndex < frameCount) ? Type.Data : Type.Fin;
 
                     TransmitterBuffer[frameIndex % input.BufferSize] = frame;
-                    Console.WriteLine(Util.BinaryToHexa(frame.Message));
+                    //Console.WriteLine(Util.BinaryToHexa(frame.Message));
                     while (!synchronizer.TransferTrameToSupportSource(frame)) ;
 
                     Stopwatch frameTimer = new Stopwatch();
@@ -53,29 +67,33 @@ namespace Tp1
                     frameIndex++;
                 }
 
+                while (!synchronizer.ReadyToReadDestinationMessage()) ;
+
                 Frame receivedFrame = synchronizer.GetMessageFromDestination();
 
-                if(receivedFrame.type == Type.Fin)
-                {
-                    lastFrameReceived = true;
-                }
-                else if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
-                {
-                    //enlever la trame du buffer
-                    TransmitterBuffer[receivedFrame.FrameId % input.BufferSize] = null;
-                    bufferUsedCellCount--;
-                    framesTimer[receivedFrame.FrameId].Stop();
-                    framesTimer.Remove(receivedFrame.FrameId);
-                }
-                else if (receivedFrame.type == Type.Nak) //Code de la trame recu
-                {
-                    //Renvoyer la trame en erreur
-                    while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) ;
+                if (receivedFrame != null)
+                { 
+                    if (receivedFrame.type == Type.Fin)
+                    {
+                        lastFrameReceived = true;
+                    }
+                    else if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
+                    {
+                        //enlever la trame du buffer
+                        TransmitterBuffer[receivedFrame.FrameId % input.BufferSize] = null;
+                        bufferUsedCellCount--;
+                        framesTimer[receivedFrame.FrameId].Stop();
+                        framesTimer.Remove(receivedFrame.FrameId);
+                    }
+                    else if (receivedFrame.type == Type.Nak) //Code de la trame recu
+                    {
+                        //Renvoyer la trame en erreur
+                        while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) ;
 
-                    framesTimer[receivedFrame.FrameId].Reset();
-                    framesTimer[receivedFrame.FrameId].Start();
+                        framesTimer[receivedFrame.FrameId].Reset();
+                        framesTimer[receivedFrame.FrameId].Start();
+                    }
                 }
-
                 foreach (var timer in framesTimer)
                 {
                     if(timer.Value.ElapsedMilliseconds >= input.Delay)

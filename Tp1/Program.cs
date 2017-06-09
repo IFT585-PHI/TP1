@@ -10,11 +10,11 @@ namespace Tp1
 
             InterThreadSynchronizer machine1Synchronizer = new InterThreadSynchronizer();
 
-            Transmitter transmitter = new Transmitter(machine1Synchronizer);
-            Receiver receiver = new Receiver("test.txt", machine1Synchronizer);
-
             Inputs inputs = new Inputs();
             inputs.ReadInputs();
+
+            Transmitter transmitter = new Transmitter(machine1Synchronizer);
+            Receiver receiver = new Receiver(inputs.DestinationFileName, machine1Synchronizer);
 
             PhysicalSupport support = new PhysicalSupport(machine1Synchronizer, transmitter, receiver);
 
@@ -22,7 +22,7 @@ namespace Tp1
             Receiver r = new Receiver(inputs.DestinationFileName, machine1Synchronizer);
             int errorsCount = 0;
             bool errorMaually = false;
-            AskError(ref errorsCount, ref errorMaually);
+            //AskError(ref errorsCount, ref errorMaually);
 
             Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
             Thread receivierThread = new Thread(() => receiver.Receiving());

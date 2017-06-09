@@ -12,7 +12,7 @@ namespace Tp1
         /// <returns>binary string</returns> 
         public static string Encode(string data)
         {
-            List<char> byteList = Util.CharToBinary(data);
+            List<char> byteList = new List<char>(data);
             List<int> indexList = FindAllIndexBitCorrector(byteList);
 
             //Insert all bit correctors
@@ -35,11 +35,11 @@ namespace Tp1
 
         /// <param name="data">binary string</param>
         /// <returns>string of char</returns> 
-        public static string Decode(string codedData)
+        public static string Decode(char[] codedData)
         {
             List<char> byteList = new List<char>(codedData);
             List<int> indexBitCorrector = FindAllIndexBitCorrector(byteList);
-            indexBitCorrector.Add(indexBitCorrector.Count - 1);
+            indexBitCorrector.Add(byteList.Count - 1);
 
             // Remove the bit corrector from the binary string, starting from the end
             indexBitCorrector.Reverse();
@@ -52,9 +52,20 @@ namespace Tp1
         }
 
         /// <param name="data">binary string</param>
-        public static Boolean Validate(string codedData)
+        public static Boolean Validate(ref char[] codedData)
         {
             List<char> byteList = new List<char>(codedData);
+
+            string s = string.Empty;
+
+            foreach (char c in codedData)
+                s += c;
+
+            Util.InjectErrorRandom(ref s);
+            Util.InjectErrorRandom(ref s);
+
+            byteList = new List<char>(s);
+
 
             Char newLastBitValue = CalculateLastBitCorrector(byteList);
             Char oldLastBitValue = byteList.Last();
@@ -77,6 +88,9 @@ namespace Tp1
                 // Then the error is the bit corrector itself
                 int indexBadBit = indexBitCorrectorError[0];
                 byteList[indexBadBit] = ((byteList[indexBadBit] == '0') ? '1' : '0');
+
+                for (int i = 0; i < byteList.Count; i++)
+                    codedData[i] = byteList[i];
 
                 return true;
             }
@@ -104,9 +118,12 @@ namespace Tp1
                 // we have correctly fixed our error
                 if (oldLastBitValue == newLastBitValue && indexBitCorrectorError.Count == 0)
                 {
+                    for (int i = 0; i < byteList.Count; i++)
+                        codedData[i] = byteList[i];
+
                     return true;
                 }
-            }
+            }  
 
             return false;
         }
