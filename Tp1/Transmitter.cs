@@ -41,14 +41,15 @@ namespace Tp1
                     string encodedMessage = Hamming.Encode(fileContent.Substring(frameIndex * 1014, 1014));
                     
                     frame.Message = encodedMessage.Substring(1024, 1024).ToCharArray();
+                    frame.type = Type.Data;
 
                     TransmitterBuffer[frameIndex % input.BufferSize] = frame;
 
-                    //Envoit
+                    synchronizer.TransferTrameToSupport(frame);
 
                     Stopwatch frameTimer = new Stopwatch();
-                    frameTimer.Start();
                     framesTimer[frameIndex] = frameTimer;
+                    framesTimer[frameIndex].Start();
 
                     bufferUsedCellCount++;
                     frameIndex++;
@@ -56,7 +57,7 @@ namespace Tp1
 
                 Frame receivedFrame = synchronizer.GetMessageFromSource();
 
-                if (receivedFrame.successCode == SuccessCode.Ack)//Code de la trame recu == ACk
+                if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
                 {
                     //enlever la trame du buffer
                     TransmitterBuffer[receivedFrame.FrameId % input.BufferSize] = null;
@@ -65,9 +66,11 @@ namespace Tp1
                     framesTimer.Remove(receivedFrame.FrameId);
 
                 }
-                else if (receivedFrame.successCode == SuccessCode.Nak) //Code de la trame recu
+                else if (receivedFrame.type == Type.Nak) //Code de la trame recu
                 {
                     //Renvoyer la trame en erreur
+                    synchronizer.TransferTrameToSupport(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize]);
+
                     framesTimer[receivedFrame.FrameId].Reset();
                     framesTimer[receivedFrame.FrameId].Start();
                 }
@@ -77,11 +80,27 @@ namespace Tp1
                     if(timer.Value.ElapsedMilliseconds >= input.Delay)
                     {
                         //Renvoyer la trame
-
+                        synchronizer.TransferTrameToSupport(TransmitterBuffer[timer.Key % input.BufferSize]);
                         timer.Value.Reset();
                         timer.Value.Start();
                     }
                 }
+            }
+        }
+
+        public void stopTimers()
+        {
+            foreach (var timer in framesTimer)
+            {
+                timer.Value.Stop();
+            }
+        }
+
+        public void restartTimers()
+        {
+            foreach (var timer in framesTimer)
+            {
+                timer.Value.Start();
             }
         }
     }

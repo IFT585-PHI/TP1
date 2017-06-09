@@ -9,12 +9,12 @@ namespace Tp1
     {
         public char[] Message = new char[1024];
         public int FrameId { get; set; }
-        public int seq;
-        public SuccessCode successCode;
+        public Type type;
     }
 
-    public enum SuccessCode
+    public enum Type
     {
+        Data, 
         Nak, //Error code
         Ack //Success code
     }
