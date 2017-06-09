@@ -43,7 +43,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Decoder.cs" />
     <Compile Include="Hamming.cs" />
     <Compile Include="InterThreadSynchronizer.cs" />
     <Compile Include="PhysicalSupport.cs" />
