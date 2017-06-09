@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Tp1
@@ -33,6 +34,7 @@ namespace Tp1
                 Frame trame = synchronizer.GetMessageFromSource();
                 if(trame.type == Type.Fin)
                 {
+                    Console.WriteLine("Fin de la transmition.");
                     sw.Write(BuildMessage());
                     break;
                 }
@@ -41,13 +43,16 @@ namespace Tp1
                 Type validationCode;
                 if (!isValid)
                 {
+                    Console.WriteLine("Trame " + trame.FrameId + "n'est pas valide.");
+                    Console.WriteLine("Envoi Nak trame #" + trame.FrameId + "to support");
                     validationCode = Type.Nak;
                 }
                 else
                 {
+                    Console.WriteLine("Trame " + trame.FrameId + "est valide.");
+                    Console.WriteLine("Envoi Ack trame #" + trame.FrameId + "to support");
                     validationCode = Type.Ack;
                     message[trame.FrameId] = trame;
-                    trame.type = Type.Nak;
                 }
                 Frame response = new Frame();
                 response.type = validationCode;
@@ -61,7 +66,6 @@ namespace Tp1
             while (!synchronizer.TransferTrameToSupportSource(trame))
             {
             }
-            synchronizer.TransferTrameToSupportSource(trame);
         }
 
         private string BuildMessage()
