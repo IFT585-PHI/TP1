@@ -7,9 +7,20 @@ namespace Tp1
     /// </summary>
     class PhysicalSupport
     {
-        public PhysicalSupport(InterThreadSynchronizer machine1Synchronizer)
-        { 
-            Thread Transmition1to2 = new Thread(() => Transmit(machine1Synchronizer));
+        Transmitter transmitter;
+        Receiver receiver;
+        InterThreadSynchronizer machineSynchronizer;
+
+        public PhysicalSupport(InterThreadSynchronizer machine, Transmitter t, Receiver r)
+        {
+            transmitter = t;
+            receiver = r;
+            machineSynchronizer = machine;
+        }
+
+        public void Start()
+        {
+            Thread Transmition1to2 = new Thread(() => Transmit(machineSynchronizer));
             Transmition1to2.Start();
         }
 
