@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
 
@@ -41,8 +42,8 @@ namespace Tp1
                     frame.type = (frameIndex < frameCount) ? Type.Data : Type.Fin;
 
                     TransmitterBuffer[frameIndex % input.BufferSize] = frame;
-
-                    while(!synchronizer.TransferTrameToSupportSource(frame)) { }
+                    Console.WriteLine(Util.BinaryToHexa(frame.Message));
+                    while (!synchronizer.TransferTrameToSupportSource(frame)) ;
 
                     Stopwatch frameTimer = new Stopwatch();
                     framesTimer[frameIndex] = frameTimer;
@@ -69,7 +70,7 @@ namespace Tp1
                 else if (receivedFrame.type == Type.Nak) //Code de la trame recu
                 {
                     //Renvoyer la trame en erreur
-                    while(synchronizer.TransferTrameToSupportSource(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) { }
+                    while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) ;
 
                     framesTimer[receivedFrame.FrameId].Reset();
                     framesTimer[receivedFrame.FrameId].Start();
@@ -80,7 +81,7 @@ namespace Tp1
                     if(timer.Value.ElapsedMilliseconds >= input.Delay)
                     {
                         //Renvoyer la trame
-                        while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[timer.Key % input.BufferSize])) { }
+                        while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[timer.Key % input.BufferSize])) ;
                         timer.Value.Reset();
                         timer.Value.Start();
                     }
