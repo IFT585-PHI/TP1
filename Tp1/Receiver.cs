@@ -42,12 +42,21 @@ namespace Tp1
                 Type validationCode;
                 if (!isValid)
                 {
+<<<<<<< HEAD
                     validationCode = Type.Nak;
                 }
                 else
                 {
                     validationCode = Type.Ack;
                     message[trame.FrameId] = trame;
+=======
+                    trame.type = Type.Nak;
+                }
+                else
+                {
+                    sw.Write(message);
+                    trame.type = Type.Ack;
+>>>>>>> a4f23c2cff0289352f06650725f59d0081018703
                 }
                 Frame response = new Frame();
                 response.type = validationCode;

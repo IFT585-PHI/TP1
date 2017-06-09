@@ -45,7 +45,7 @@ namespace Tp1
 
                     TransmitterBuffer[frameIndex % input.BufferSize] = frame;
 
-                    synchronizer.TransferTrameToSupport(frame);
+                    while(!synchronizer.TransferTrameToSupport(frame)) { }
 
                     Stopwatch frameTimer = new Stopwatch();
                     framesTimer[frameIndex] = frameTimer;
@@ -55,7 +55,7 @@ namespace Tp1
                     frameIndex++;
                 }
 
-                Frame receivedFrame = synchronizer.GetMessageFromSource();
+                Frame receivedFrame = synchronizer.GetMessageFromDestination();
 
                 if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
                 {
@@ -69,7 +69,7 @@ namespace Tp1
                 else if (receivedFrame.type == Type.Nak) //Code de la trame recu
                 {
                     //Renvoyer la trame en erreur
-                    synchronizer.TransferTrameToSupport(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize]);
+                    while(synchronizer.TransferTrameToSupport(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) { }
 
                     framesTimer[receivedFrame.FrameId].Reset();
                     framesTimer[receivedFrame.FrameId].Start();
@@ -80,7 +80,7 @@ namespace Tp1
                     if(timer.Value.ElapsedMilliseconds >= input.Delay)
                     {
                         //Renvoyer la trame
-                        synchronizer.TransferTrameToSupport(TransmitterBuffer[timer.Key % input.BufferSize]);
+                        while (synchronizer.TransferTrameToSupport(TransmitterBuffer[timer.Key % input.BufferSize])) { }
                         timer.Value.Reset();
                         timer.Value.Start();
                     }
@@ -102,6 +102,11 @@ namespace Tp1
             {
                 timer.Value.Start();
             }
+        }
+
+        public void getFrameFromReceiver()
+        {
+
         }
     }
 }
