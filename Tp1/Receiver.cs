@@ -37,12 +37,12 @@ namespace Tp1
 
                 if (String.IsNullOrEmpty(message))
                 {
-                    trame.successCode = SuccessCode.Nak;
+                    trame.type = Type.Nak;
                 }
                 else
                 {
                     sw.Write(message);
-                    trame.successCode = SuccessCode.Ack;
+                    trame.type = Type.Ack;
                 }
 
 
