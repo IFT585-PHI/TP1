@@ -22,6 +22,7 @@ namespace Tp1
         {
             int frameIndex = 0;
             int bufferUsedCellCount = 0;
+            bool lastFrameReceived = false;
             Frame[] TransmitterBuffer = new Frame[input.BufferSize];
 
             string fileContent = File.ReadAllText(@input.SourceFileName);
@@ -31,7 +32,7 @@ namespace Tp1
             if (fileContent.Length % 1024 != 0)
                 frameCount += 1;
 
-            while (frameIndex < frameCount)
+            while (frameIndex <= frameCount && lastFrameReceived)
             {
                 if(bufferUsedCellCount < input.BufferSize)
                 {
@@ -41,11 +42,11 @@ namespace Tp1
                     string encodedMessage = Hamming.Encode(fileContent.Substring(frameIndex * 1014, 1014));
                     
                     frame.Message = encodedMessage.Substring(1024, 1024).ToCharArray();
-                    frame.type = Type.Data;
+                    frame.type = (frameIndex < frameCount) ? Type.Data : Type.Fin;
 
                     TransmitterBuffer[frameIndex % input.BufferSize] = frame;
 
-                    while(!synchronizer.TransferTrameToSupport(frame)) { }
+                    while(!synchronizer.TransferTrameToSupportSource(frame)) { }
 
                     Stopwatch frameTimer = new Stopwatch();
                     framesTimer[frameIndex] = frameTimer;
@@ -57,19 +58,22 @@ namespace Tp1
 
                 Frame receivedFrame = synchronizer.GetMessageFromDestination();
 
-                if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
+                if(receivedFrame.type == Type.Fin)
+                {
+                    lastFrameReceived = true;
+                }
+                else if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
                 {
                     //enlever la trame du buffer
                     TransmitterBuffer[receivedFrame.FrameId % input.BufferSize] = null;
                     bufferUsedCellCount--;
                     framesTimer[receivedFrame.FrameId].Stop();
                     framesTimer.Remove(receivedFrame.FrameId);
-
                 }
                 else if (receivedFrame.type == Type.Nak) //Code de la trame recu
                 {
                     //Renvoyer la trame en erreur
-                    while(synchronizer.TransferTrameToSupport(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) { }
+                    while(synchronizer.TransferTrameToSupportSource(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) { }
 
                     framesTimer[receivedFrame.FrameId].Reset();
                     framesTimer[receivedFrame.FrameId].Start();
@@ -80,7 +84,7 @@ namespace Tp1
                     if(timer.Value.ElapsedMilliseconds >= input.Delay)
                     {
                         //Renvoyer la trame
-                        while (synchronizer.TransferTrameToSupport(TransmitterBuffer[timer.Key % input.BufferSize])) { }
+                        while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[timer.Key % input.BufferSize])) { }
                         timer.Value.Reset();
                         timer.Value.Start();
                     }
