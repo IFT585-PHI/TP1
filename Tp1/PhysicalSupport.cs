@@ -7,18 +7,21 @@ namespace Tp1
     /// </summary>
     class PhysicalSupport
     {
-        public PhysicalSupport(InterThreadSynchronizer machine1Synchronizer, Transmitter t, Receiver r)
-        { 
-            Thread Transmition1to2 = new Thread(() => Transmit(machine1Synchronizer));
-            Transmition1to2.Start();
+        Transmitter transmitter;
+        Receiver receiver;
+        InterThreadSynchronizer machineSynchronizer;
+
+        public PhysicalSupport(InterThreadSynchronizer machine, Transmitter t, Receiver r)
+        {
+            transmitter = t;
+            receiver = r;
+            machineSynchronizer = machine;
         }
 
         public void Start()
         {
-            while (true)
-            {
-
-            }
+            Thread Transmition1to2 = new Thread(() => Transmit(machineSynchronizer));
+            Transmition1to2.Start();
         }
 
         /// <summary>

@@ -24,12 +24,12 @@ namespace Tp1
             bool errorMaually = false;
             AskError(ref errorsCount, ref errorMaually);
 
-            //Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
-            //Thread receivierThread = new Thread(() => reciever.Receiving());
-            //transmitterThread.Start();
-            //receivierThread.Start();
+            Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
+            Thread receivierThread = new Thread(() => receiver.Receiving());
+            transmitterThread.Start();
+            receivierThread.Start();
 
-            //support.Start();
+            support.Start();
         }
 
         static void AskError(ref int errorsCount, ref bool errorManually)

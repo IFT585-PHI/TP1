@@ -12,8 +12,6 @@
         private bool pretEmmetreDestination= true;
         private bool recuSource = false;
 
-        private bool isCodeNew;
-
         ///<Summary> 
         ///Transfer the current Frame to the support.
         ///</Summary>
