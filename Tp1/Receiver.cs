@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Tp1
 {
     class Receiver
     {
-        public const string ERROR_CODE = "NAK";
-        public const string SUCCES_CODE = "ACK";
-
         StreamWriter sw;
         Decoder decoder;
         InterThreadSynchronizer synchronizer;
@@ -32,16 +34,15 @@ namespace Tp1
 
                 Frame trame = synchronizer.GetMessageFromSource();
                 string message = decoder.Decode(trame, "thingy");
-                string code;
 
                 if (String.IsNullOrEmpty(message))
                 {
-                    code = ERROR_CODE;
+                    trame.successCode = SuccessCode.Nak;
                 }
                 else
                 {
                     sw.Write(message);
-                    code = SUCCES_CODE;
+                    trame.successCode = SuccessCode.Ack;
                 }
 
 
