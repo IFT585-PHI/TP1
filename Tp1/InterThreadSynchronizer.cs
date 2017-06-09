@@ -30,18 +30,13 @@
         ///Transfer the current Frame from one machine to the other.
         ///</Summary>
         ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Weft was transfered.</returns>
-        public bool TransferTrameToDestination()
+        public void TransferTrameToDestination()
         {
             if (!pretEmmetreSource && !recuDestination)
             {
                 receptionDestionation = envoieSource;
                 recuDestination = true;
                 pretEmmetreSource = true;
-                return true;
-            }
-            else
-            {
-                return false;
             }
         }
 
