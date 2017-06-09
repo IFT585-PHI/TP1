@@ -14,7 +14,6 @@ namespace Tp1
         InterThreadSynchronizer synchronizer;
         List<Frame> message;
 
-
         public Receiver(string outputPath, InterThreadSynchronizer synchronizer)
         {
             sw = new StreamWriter(outputPath);
@@ -40,17 +39,29 @@ namespace Tp1
                 }
 
                 bool isValid = Hamming.Validate(trame.Message.ToString());
-
+                Type validationCode;
                 if (!isValid)
                 {
-                    trame.successCode = SuccessCode.Nak;
+                    validationCode = Type.Nak;
                 }
                 else
                 {
-                    trame.successCode = SuccessCode.Ack;
+                    validationCode = Type.Ack;
                     message[trame.FrameId] = trame;
                 }
+                Frame response = new Frame();
+                response.type = validationCode;
+                response.FrameId = trame.FrameId;
+                SendToSource(response);
             }
+        }
+
+        private void SendToSource(Frame trame)
+        {
+            while (!synchronizer.TransferTrameToSupportSource(trame))
+            {
+            }
+            synchronizer.TransferTrameToSupportSource(trame);
         }
 
         private string BuildMessage()

@@ -7,14 +7,18 @@
         private  bool pretEmmetreSource = true;
         private  bool recuDestination = false;
 
-        private string envoieDestination;
+        private Frame envoieDestination;
+        private Frame receptionSource;
+        private bool pretEmmetreDestination= true;
+        private bool recuSource = false;
+
         private bool isCodeNew;
 
         ///<Summary> 
         ///Transfer the current Frame to the support.
         ///</Summary>
         ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Weft was transfered.</returns>
-        public  bool TransferTrameToSupport(Frame trame)
+        public  bool TransferTrameToSupportSource(Frame trame)
         {
             if (pretEmmetreSource){
                 envoieSource = trame;
@@ -26,6 +30,23 @@
             }
         }
 
+        ///<Summary> 
+        ///Transfer the current Frame to the support.
+        ///</Summary>
+        ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Weft was transfered.</returns>
+        public bool TransferTrameToSupportDestination(Frame trame)
+        {
+            if (pretEmmetreDestination)
+            {
+                envoieDestination = trame;
+                pretEmmetreDestination = false;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         ///<Summary> 
         ///Transfer the current Frame from one machine to the other.
         ///</Summary>
@@ -40,6 +61,20 @@
             }
         }
 
+        ///<Summary> 
+        ///Transfer the current Frame from one machine to the other.
+        ///</Summary>
+        ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Weft was transfered.</returns>
+        public void TransferTrameToSource()
+        {
+            if (!pretEmmetreDestination && !recuSource)
+            {
+                receptionSource = envoieDestination;
+                recuSource = true;
+                pretEmmetreDestination = true;
+            }
+        }
+
         ///<Summary>
         ///Check to see if there is something to be recieved.
         ///</Summary>
@@ -47,6 +82,15 @@
         public bool ReadyToReadSourceMessage()
         {
             return recuDestination;
+        }
+
+        ///<Summary>
+        ///Check to see if there is something to be recieved.
+        ///</Summary>
+        ///<returns> False there is nothing and True if we can read something.</returns>
+        public bool ReadyToReadDestinationMessage()
+        {
+            return recuSource;
         }
 
         ///<Summary> 
@@ -59,7 +103,14 @@
             return receptionDestionation;
         }
 
-
-
+        ///<Summary> 
+        ///Reads the Frame that was recieved.
+        ///</Summary>
+        ///<returns> The Frame that was recieved.</returns>
+        public Frame GetMessageFromDestination()
+        {
+            recuSource = false;
+            return receptionSource;
+        }
     }
 }
