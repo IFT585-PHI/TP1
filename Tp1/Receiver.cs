@@ -10,9 +10,6 @@ namespace Tp1
 {
     class Receiver
     {
-        public const string ERROR_CODE = "NAK";
-        public const string SUCCES_CODE = "ACK";
-
         StreamWriter sw;
         Decoder decoder;
         InterThreadSynchronizer synchronizer;
@@ -37,16 +34,15 @@ namespace Tp1
 
                 Frame trame = synchronizer.GetMessageFromSource();
                 string message = decoder.Decode(trame, "thingy");
-                string code;
 
                 if (String.IsNullOrEmpty(message))
                 {
-                    code = ERROR_CODE;
+                    trame.successCode = SuccessCode.Nack;
                 }
                 else
                 {
                     sw.Write(message);
-                    code = SUCCES_CODE;
+                    trame.successCode = SuccessCode.Ack;
                 }
 
 

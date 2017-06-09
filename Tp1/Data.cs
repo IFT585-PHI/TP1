@@ -14,14 +14,28 @@ namespace Tp1
         //public const int WEFT_SIZE = 7;
         public char[] Message = new char[1024];
         public int FrameId { get; set; }
-        public int Code { get; set; }
+        public EncodingAlgo Code { get; set; }
+        public int seq;
+        public SuccessCode successCode;
+    }
+
+    public enum EncodingAlgo
+    {
+        Hamming,
+        SelectiveReject
+    }
+
+    public enum SuccessCode
+    {
+        Nack, //Error code
+        Ack //Success code
     }
 
     struct Inputs
     {
         const string INPUTS_FILENAME = "../../inputs.txt";
         public int BufferSize;
-        public int Delay;
+        public long Delay;
         public string SourceFileName;
         public string DestinationFileName;
 
