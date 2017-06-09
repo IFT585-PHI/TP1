@@ -8,8 +8,6 @@ namespace Tp1
     /// </summary>
     class Receiver
     {
-        public const int END_CODE = 666;
-
         StreamWriter sw;
         InterThreadSynchronizer synchronizer;
         List<Frame> message;
@@ -33,9 +31,10 @@ namespace Tp1
                 }
 
                 Frame trame = synchronizer.GetMessageFromSource();
-                if(trame.FrameId == END_CODE)
+                if(trame.type == Type.Fin)
                 {
                     sw.Write(BuildMessage());
+                    break;
                 }
 
                 bool isValid = Hamming.Validate(trame.Message.ToString());

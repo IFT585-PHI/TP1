@@ -1,4 +1,6 @@
-﻿namespace Tp1
+﻿using System.Threading;
+
+namespace Tp1
 {
     class Program
     {     
@@ -6,12 +8,16 @@
         {
             InterThreadSynchronizer machine1Synchronizer = new InterThreadSynchronizer();
             InterThreadSynchronizer machine2Synchronizer = new InterThreadSynchronizer();
+            Transmitter transmitter = new Transmitter(machine1Synchronizer);
+            Receiver reciever = new Receiver("test.txt", machine1Synchronizer);
             Inputs inputs = new Inputs();
             inputs.ReadInputs();
+            PhysicalSupport support = new PhysicalSupport(machine1Synchronizer);
 
-            PhysicalSupport support = new PhysicalSupport(machine1Synchronizer, machine2Synchronizer);
-            Simulator machine1 = new Simulator(new Transmitter(machine1Synchronizer), new Receiver("test.txt", machine1Synchronizer), inputs);
-            Simulator machine2 = new Simulator(new Transmitter(machine1Synchronizer), new Receiver("test.txt", machine2Synchronizer), inputs);
+            Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
+            Thread receivierThread = new Thread(() => reciever.Receiving());
+            transmitterThread.Start();
+            receivierThread.Start();
         }
         
     }
