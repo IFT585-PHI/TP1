@@ -1,4 +1,5 @@
-﻿using System;
+﻿﻿using System;
+﻿using System.Threading;
 
 namespace Tp1
 {
@@ -8,20 +9,25 @@ namespace Tp1
         {
 
             InterThreadSynchronizer machine1Synchronizer = new InterThreadSynchronizer();
+
+            Transmitter transmitter = new Transmitter(machine1Synchronizer);
+            Receiver receiver = new Receiver("test.txt", machine1Synchronizer);
+
             Inputs inputs = new Inputs();
             inputs.ReadInputs();
 
-            PhysicalSupport support = new PhysicalSupport(machine1Synchronizer);
-            //Simulator machine1 = new Simulator(new Transmitter(machine1Synchronizer), new Receiver("test.txt", machine1Synchronizer), inputs);
-            //Simulator machine2 = new Simulator(new Transmitter(machine2Synchronizer), new Receiver("test.txt", machine2Synchronizer), inputs);
-            Transmitter t = new Transmitter(machine2Synchronizer);
-            Receiver r = new Receiver(inputs.DestinationFileName, machine2Synchronizer);
-            //support.setMachine1(machine1);
-            //support.setMachine2(machine2);
+            PhysicalSupport support = new PhysicalSupport(machine1Synchronizer, transmitter, receiver);
+
+            Transmitter t = new Transmitter(machine1Synchronizer);
+            Receiver r = new Receiver(inputs.DestinationFileName, machine1Synchronizer);
             int errorsCount = 0;
             bool errorMaually = false;
             AskError(ref errorsCount, ref errorMaually);
 
+            //Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
+            //Thread receivierThread = new Thread(() => reciever.Receiving());
+            //transmitterThread.Start();
+            //receivierThread.Start();
 
             //support.Start();
         }
@@ -47,7 +53,7 @@ namespace Tp1
             {
                 Console.Write("randomly.\n");
             }
-
+            
         }
 
     }
