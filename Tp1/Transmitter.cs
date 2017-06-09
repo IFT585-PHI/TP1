@@ -107,10 +107,5 @@ namespace Tp1
                 timer.Value.Start();
             }
         }
-
-        public void getFrameFromReceiver()
-        {
-
-        }
     }
 }
