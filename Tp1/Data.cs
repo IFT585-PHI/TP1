@@ -16,7 +16,8 @@ namespace Tp1
     {
         Data, 
         Nak, //Error code
-        Ack //Success code
+        Ack, //Success code
+        Fin
     }
 
     struct Inputs

@@ -48,6 +48,7 @@ namespace Tp1
                 {
                     validationCode = Type.Ack;
                     message[trame.FrameId] = trame;
+                    trame.type = Type.Nak;
                 }
                 Frame response = new Frame();
                 response.type = validationCode;
