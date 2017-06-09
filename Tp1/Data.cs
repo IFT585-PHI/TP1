@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tp1
 {
+    /// <summary>
+    /// Class that represents the reciever on a frame.
+    /// </summary>
     public class Frame
     {
         public char[] Message = new char[1024];

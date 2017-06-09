@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace Tp1
 {
+    /// <summary>
+    /// Class that represents the physical support on the machine.
+    /// </summary>
     class PhysicalSupport
     {
         public PhysicalSupport(InterThreadSynchronizer machine1Synchronizer, InterThreadSynchronizer machine2Synchronizer)
@@ -13,6 +16,9 @@ namespace Tp1
             Transmition2to1.Start();
         }
 
+        /// <summary>
+        /// Function that transmit the frame from one machine to another.
+        /// </summary>
         public void Transmit(InterThreadSynchronizer machineSynchronizer)
         {
             while (true)

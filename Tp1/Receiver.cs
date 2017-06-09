@@ -1,28 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Tp1
 {
+    /// <summary>
+    /// Class that represents the reciever on a machine.
+    /// </summary>
     class Receiver
     {
+        public const int END_CODE = 666;
+
         StreamWriter sw;
-        Decoder decoder;
         InterThreadSynchronizer synchronizer;
+        List<Frame> message;
+
 
         public Receiver(string outputPath, InterThreadSynchronizer synchronizer)
         {
             sw = new StreamWriter(outputPath);
-            decoder = new Decoder();
             this.synchronizer = synchronizer;
         }
 
         /// <summary>
-        /// 
+        /// Delagate thread fonction that recieve the frame, if it's available, check for validity and send the message back. When the message is complete,
+        /// writes the frame to the file.
         /// </summary>
         public void Receiving()
         {
@@ -33,24 +34,33 @@ namespace Tp1
                 }
 
                 Frame trame = synchronizer.GetMessageFromSource();
-                string message = decoder.Decode(trame, "thingy");
+                if(trame.FrameId == END_CODE)
+                {
+                    sw.Write(BuildMessage());
+                }
 
-                if (String.IsNullOrEmpty(message))
+                bool isValid = Hamming.Validate(trame.Message.ToString());
+
+                if (!isValid)
                 {
                     trame.successCode = SuccessCode.Nak;
                 }
                 else
                 {
-                    sw.Write(message);
                     trame.successCode = SuccessCode.Ack;
+                    message[trame.FrameId] = trame;
                 }
-
-
             }
         }
 
-       
-
-
+        private string BuildMessage()
+        {
+            string binary = "";
+            foreach(Frame trame in message)
+            {
+                binary += trame.Message;
+            }
+            return Util.BinaryToChar(binary);
+        }
     }
 }
