@@ -24,12 +24,11 @@ namespace Tp1
         }
 
         ///<summary>
-        ///Convert a string of binary into a string of char
+        ///Convert a string of 8 binary into a char
         ///</summary>
-        public static string BinaryToChar(string data)
+        public static char BinaryToChar(string data)
         {
             List<Byte> byteList = new List<Byte>();
-
 
             if(data.Length % 8 != 0)
             {
@@ -41,39 +40,23 @@ namespace Tp1
                 }
             }
 
-
-
             for (int i = 0; i < data.Length; i += 8)
             {
                 byteList.Add(Convert.ToByte(data.Substring(i, 8), 2));
             }
 
-            return Encoding.ASCII.GetString(byteList.ToArray());
+            char a = Encoding.ASCII.GetString(byteList.ToArray())[0];
+            return a;
         }
 
         ///<summary>
-        ///Convert a list of char into a binary string
+        ///Convert a list of char into a string
         ///</summary>
-        public static string ListToBinary(List<char> list)
+        public static string ListToString(List<char> list)
         {
             return string.Join(string.Empty, list.ToArray());
         }
 
-        public static void InjectErrorAtPosition(ref string codedData, int pos)
-        {
-            StringBuilder s = new StringBuilder(codedData);
-            s[pos] = ((s[pos] == '0') ? '1' : '0'); ;
-            codedData = s.ToString();
-        }
-
-        public static void InjectErrorRandom(ref string codedData)
-        {
-            Random r = new Random();
-            int ra = r.Next(0, codedData.Length - 1);
-            InjectErrorAtPosition(ref codedData, ra);
-
-            System.Threading.Thread.Sleep(100);
-        }
         public static string BinaryToHexa(char[] text)
         {
 
@@ -92,6 +75,22 @@ namespace Tp1
             }
 
             return result.ToString();
+        }
+
+
+
+        public static void InjectErrorAtPosition(ref char[] codedData, int pos)
+        {
+            codedData[pos] = ((codedData[pos] == '0') ? '1' : '0'); ;
+        }
+
+        public static void InjectErrorRandom(ref char[] codedData)
+        {
+            Random r = new Random();
+            int ra = r.Next(0, codedData.Length - 1);
+            InjectErrorAtPosition(ref codedData, ra);
+
+            System.Threading.Thread.Sleep(100);
         }
     }
 }

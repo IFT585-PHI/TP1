@@ -67,19 +67,17 @@ namespace Tp1
 
         private void SendToSource(Frame trame)
         {
-            while (!synchronizer.TransferTrameToSupportDestination(trame))
-            {
-            }
+            while (!synchronizer.TransferTrameToSupportDestination(trame)) ;
         }
 
         private string BuildMessage()
         {
-            string result = string.Empty;
+            List<char> result = new List<char>();
             foreach(KeyValuePair<int, Frame> entry in message)
             {
-                result += Hamming.Decode(entry.Value.Message);
+                result.Add(Hamming.Decode(entry.Value.Message));
             }
-            return result;
+            return Util.ListToString(result);
         }
     }
 }

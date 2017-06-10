@@ -26,7 +26,7 @@ namespace Tp1
 
             string fileContent = File.ReadAllText(@input.SourceFileName);
 
-            fileContent = Util.ListToBinary(Util.CharToBinary(fileContent));
+            fileContent = Util.ListToString(Util.CharToBinary(fileContent));
 
             int frameCount = fileContent.Length / 8;
             
