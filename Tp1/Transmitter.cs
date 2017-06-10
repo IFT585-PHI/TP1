@@ -18,9 +18,9 @@ namespace Tp1
 
         public void Transmitting(Inputs input)
         {
-            Console.WriteLine("Transmitting start");
             int frameIndex = 0;
             int bufferUsedCellCount = 0;
+            int lastAckReceivedIndex = -1;
             bool lastFrameReceived = false;
             Frame[] TransmitterBuffer = new Frame[input.BufferSize];
 
@@ -77,10 +77,14 @@ namespace Tp1
                     else if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
                     {
                         //enlever la trame du buffer
-                        TransmitterBuffer[receivedFrame.FrameId % input.BufferSize] = null;
-                        bufferUsedCellCount--;
-                        framesTimer[receivedFrame.FrameId].Stop();
-                        framesTimer.Remove(receivedFrame.FrameId);
+                        for(int index = receivedFrame.FrameId; index > lastAckReceivedIndex; index--)
+                        {
+                            TransmitterBuffer[index % input.BufferSize] = null;
+                            bufferUsedCellCount--;
+                            framesTimer[index].Stop();
+                            framesTimer.Remove(index);
+                        }
+                        lastAckReceivedIndex = receivedFrame.FrameId;
                     }
                     else if (receivedFrame.type == Type.Nak) //Code de la trame recu
                     {
