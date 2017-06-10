@@ -10,6 +10,7 @@ namespace Tp1
         Transmitter transmitter;
         Receiver receiver;
         InterThreadSynchronizer machineSynchronizer;
+        bool insertError = false;
 
         public PhysicalSupport(InterThreadSynchronizer machine, Transmitter t, Receiver r)
         {
@@ -31,7 +32,7 @@ namespace Tp1
         {
             while (true)
             {
-                machineSynchronizer.TransferTrameToDestination();
+                machineSynchronizer.TransferTrameToDestination(insertError);
                 machineSynchronizer.TransferTrameToSource();
             }
         }

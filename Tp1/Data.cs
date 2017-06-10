@@ -40,8 +40,8 @@ namespace Tp1
                 DestinationFileName = file.ReadLine();
                 Console.WriteLine("BufferSize: " + BufferSize);
                 Console.WriteLine("Delay: " + Delay);
-                Console.WriteLine("SourceFileName: " + SourceFileName);
-                Console.WriteLine("DestinationFileName: " + DestinationFileName);
+                Console.WriteLine("Source FileName: " + SourceFileName);
+                Console.WriteLine("Destination FileName: " + DestinationFileName);
             }
             catch (Exception e)
             {

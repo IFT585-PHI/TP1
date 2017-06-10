@@ -7,22 +7,17 @@ namespace Tp1
     {
         static void Main(string[] args)
         {
-
-            InterThreadSynchronizer machine1Synchronizer = new InterThreadSynchronizer();
-
             Inputs inputs = new Inputs();
             inputs.ReadInputs();
 
-            Transmitter transmitter = new Transmitter(machine1Synchronizer);
-            Receiver receiver = new Receiver(inputs.DestinationFileName, machine1Synchronizer);
+            InterThreadSynchronizer machineSynchronizer = new InterThreadSynchronizer();            
 
-            PhysicalSupport support = new PhysicalSupport(machine1Synchronizer, transmitter, receiver);
+            Transmitter transmitter = new Transmitter(machineSynchronizer);
+            Receiver receiver = new Receiver(inputs.DestinationFileName, machineSynchronizer);
 
-            Transmitter t = new Transmitter(machine1Synchronizer);
-            Receiver r = new Receiver(inputs.DestinationFileName, machine1Synchronizer);
-            int errorsCount = 0;
-            bool errorMaually = false;
-            //AskError(ref errorsCount, ref errorMaually);
+            PhysicalSupport support = new PhysicalSupport(machineSynchronizer, transmitter, receiver);
+
+            bool insertErrors = AskError();
 
             Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
             Thread receivierThread = new Thread(() => receiver.Receiving());
@@ -32,28 +27,20 @@ namespace Tp1
             support.Start();
         }
 
-        static void AskError(ref int errorsCount, ref bool errorManually)
+        static bool AskError()
         {
-            Console.WriteLine("\nHow many frames do you want to insert error(s)?");
-            Int32.TryParse(Console.ReadLine(), out errorsCount);
-
-            Console.WriteLine("Do you want the errors to be inserted manualy? (y/n)");
+            Console.WriteLine("Voulez-vous inserer des erreurs? (y/n)");
             string r = Console.ReadLine();
+
             while (r != "y" && r != "n")
                 r = Console.ReadLine();
-
-
-            Console.Write(errorsCount + " frames will be affected ");
+            
             if (r == "y")
             {
-                errorManually = true;
-                Console.Write("manually.\n");
+                return true;
             }
-            else
-            {
-                Console.Write("randomly.\n");
-            }
-            
+
+            return false;
         }
 
     }

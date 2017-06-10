@@ -1,4 +1,5 @@
-﻿namespace Tp1
+﻿using System;
+namespace Tp1
 {
     public class InterThreadSynchronizer
     {
@@ -15,8 +16,8 @@
         ///<Summary> 
         ///Transfer the current Frame to the support.
         ///</Summary>
-        ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Weft was transfered.</returns>
-        public  bool TransferTrameToSupportSource(Frame trame)
+        ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Frame was transfered.</returns>
+        public bool TransferTrameToSupportSource(Frame trame)
         {
             if (pretEmmetreSource){
                 envoieSource = trame;
@@ -31,7 +32,7 @@
         ///<Summary> 
         ///Transfer the current Frame to the support.
         ///</Summary>
-        ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Weft was transfered.</returns>
+        ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Frame was transfered.</returns>
         public bool TransferTrameToSupportDestination(Frame trame)
         {
             if (pretEmmetreDestination)
@@ -48,11 +49,39 @@
         ///<Summary> 
         ///Transfer the current Frame from one machine to the other.
         ///</Summary>
-        ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Weft was transfered.</returns>
-        public void TransferTrameToDestination()
+        ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Frame was transfered.</returns>
+        public void TransferTrameToDestination(bool insertError)
         {
             if (!pretEmmetreSource && !recuDestination)
             {
+                if (insertError)
+                {
+                    Console.WriteLine("Tramme actuelle: ");
+                    Console.WriteLine(envoieSource.Message);
+                    Console.WriteLine("Combien d'erreur souhaitez-vous insérer? ");
+                    int nbError = Int32.Parse(Console.ReadLine());
+                    Console.WriteLine("Voulez-vous inserer aléatoirement ou manuellement? (y/n)");
+                    string r = Console.ReadLine();
+
+                    while (r != "y" && r != "n")
+                        r = Console.ReadLine();
+
+                    if (r == "y")
+                    {
+                        for (int i = 0; i < nbError; ++i)
+                        {
+                            Util.InjectErrorRandom(ref envoieSource.Message);
+                        }
+                    }
+                    else
+                    {
+
+                    }                   
+                    
+
+
+                }
+                    
                 receptionDestionation = envoieSource;
                 recuDestination = true;
                 pretEmmetreSource = true;
@@ -62,7 +91,7 @@
         ///<Summary> 
         ///Transfer the current Frame from one machine to the other.
         ///</Summary>
-        ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Weft was transfered.</returns>
+        ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Frame was transfered.</returns>
         public void TransferTrameToSource()
         {
             if (!pretEmmetreDestination && !recuSource)
