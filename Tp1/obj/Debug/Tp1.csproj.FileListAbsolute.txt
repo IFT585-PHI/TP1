@@ -23,3 +23,8 @@ C:\Users\Utilisateur\Desktop\TP1-IFT585\TP1\Tp1\obj\Debug\Tp1.pdb
 C:\Users\Shocky\Documents\University\Été 2017\Telematique\TP1\Tp1\bin\Debug\Tp1.exe.config
 C:\Users\Shocky\Documents\University\Été 2017\Telematique\TP1\Tp1\obj\Debug\Tp1.exe
 C:\Users\Shocky\Documents\University\Été 2017\Telematique\TP1\Tp1\obj\Debug\Tp1.pdb
+D:\Documents\Informatique\IFT585\TP1\Tp1\obj\Debug\Tp1.csprojResolveAssemblyReference.cache
+D:\Documents\Informatique\IFT585\TP1\Tp1\obj\Debug\Tp1.exe
+D:\Documents\Informatique\IFT585\TP1\Tp1\obj\Debug\Tp1.pdb
+D:\Documents\Informatique\IFT585\TP1\Tp1\bin\Debug\Tp1.exe
+D:\Documents\Informatique\IFT585\TP1\Tp1\bin\Debug\Tp1.pdb
