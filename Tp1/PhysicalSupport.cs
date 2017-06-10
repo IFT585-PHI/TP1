@@ -1,5 +1,5 @@
 ﻿using System.Threading;
-
+using System;
 namespace Tp1
 {
     /// <summary>
@@ -10,6 +10,7 @@ namespace Tp1
         Transmitter transmitter;
         Receiver receiver;
         InterThreadSynchronizer machineSynchronizer;
+        bool insertError = false;
 
         public PhysicalSupport(InterThreadSynchronizer machine, Transmitter t, Receiver r)
         {
@@ -18,8 +19,9 @@ namespace Tp1
             machineSynchronizer = machine;
         }
 
-        public void Start()
+        public void Start(bool error)
         {
+            insertError = error;
             Thread Transmition1to2 = new Thread(() => Transmit(machineSynchronizer));
             Transmition1to2.Start();
         }
@@ -29,9 +31,17 @@ namespace Tp1
         /// </summary>
         public void Transmit(InterThreadSynchronizer machineSynchronizer)
         {
-            while (true)
+            while (insertError)
             {
-                machineSynchronizer.TransferTrameToDestination();
+                transmitter.stopTimers();
+                machineSynchronizer.TransferTrameToDestination(ref insertError);
+                transmitter.restartTimers();
+                machineSynchronizer.TransferTrameToSource();
+            }
+
+            while (true)
+            {                
+                machineSynchronizer.TransferTrameToDestination(ref insertError);
                 machineSynchronizer.TransferTrameToSource();
             }
         }

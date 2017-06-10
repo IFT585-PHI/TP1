@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Hamming.cs" />
     <Compile Include="InterThreadSynchronizer.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="PhysicalSupport.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

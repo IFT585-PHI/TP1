@@ -7,7 +7,7 @@ namespace Tp1
     /// </summary>
     public class Frame
     {
-        public char[] Message = new char[8];
+        public char[] Message = new char[13];
         public int FrameId { get; set; }
         public Type type;
     }
@@ -40,8 +40,8 @@ namespace Tp1
                 DestinationFileName = file.ReadLine();
                 Console.WriteLine("BufferSize: " + BufferSize);
                 Console.WriteLine("Delay: " + Delay);
-                Console.WriteLine("SourceFileName: " + SourceFileName);
-                Console.WriteLine("DestinationFileName: " + DestinationFileName);
+                Console.WriteLine("Source FileName: " + SourceFileName);
+                Console.WriteLine("Destination FileName: " + DestinationFileName + "\n");
             }
             catch (Exception e)
             {
