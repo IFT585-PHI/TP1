@@ -14,12 +14,10 @@ namespace Tp1
             inputs.ReadInputs();
 
             Transmitter transmitter = new Transmitter(machine1Synchronizer);
-            Receiver receiver = new Receiver(inputs.DestinationFileName, machine1Synchronizer);
+            ReseauxRecepteur ReseauxRecepteur = new ReseauxRecepteur(inputs.DestinationFileName);
+            Receiver receiver = new Receiver(ReseauxRecepteur, machine1Synchronizer, inputs.BufferSize);
 
             PhysicalSupport support = new PhysicalSupport(machine1Synchronizer, transmitter, receiver);
-
-            Transmitter t = new Transmitter(machine1Synchronizer);
-            Receiver r = new Receiver(inputs.DestinationFileName, machine1Synchronizer);
             int errorsCount = 0;
             bool errorMaually = false;
             //AskError(ref errorsCount, ref errorMaually);
