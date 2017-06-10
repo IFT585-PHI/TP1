@@ -53,6 +53,7 @@ namespace Tp1
                     }
                     else
                     {
+                        coucheReseaux.GiveNewFrame(trame);
                         SendValidResponse(trame);
                     }
                 }
