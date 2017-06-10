@@ -39,36 +39,15 @@ namespace Tp1
 
                 waitForFrame();
                 Frame trame = synchronizer.GetMessageFromSource();
-<<<<<<< HEAD
-=======
-                if(trame.type == Type.Fin)
-                {
-                    Logger.WriteMessage("Fin de la transmition.");
-                    String s = BuildMessage();
-                    File.WriteAllText(outputpa, s);
-                    break;
-                }
-
->>>>>>> 9de5bbd95cf1580a7b4827e1a1c237d4d22f283d
-
                 bool isValid = Hamming.Validate(ref trame.Message);
 
                 if (!isValid)
                 {
-<<<<<<< HEAD
                     SendInvalideRespone(trame);
-                } else {
-                    SendValidResponse(trame);
-=======
-                    Logger.WriteMessage("Trame " + trame.FrameId + "n'est pas valide.");
-                    validationCode = Type.Nak;
                 }
                 else
                 {
-                    Logger.WriteMessage("Trame " + trame.FrameId + "est valide.");
-                    validationCode = Type.Ack;
-                    message[trame.FrameId] = trame;
->>>>>>> 9de5bbd95cf1580a7b4827e1a1c237d4d22f283d
+                    SendValidResponse(trame);
                 }
             }
         }
@@ -82,16 +61,12 @@ namespace Tp1
 
         private void SendToSource(int numSeq, Type type)
         {
-<<<<<<< HEAD
             Frame trame = new Tp1.Frame();
             trame.FrameId = numSeq;
             trame.type = type;
             while (!synchronizer.TransferTrameToSupportDestination(trame))
             {
             }
-=======
-            while (!synchronizer.TransferTrameToSupportDestination(trame)) ;
->>>>>>> 9de5bbd95cf1580a7b4827e1a1c237d4d22f283d
         }
 
         private void SendInvalideRespone(Frame trame)
@@ -160,7 +135,6 @@ namespace Tp1
 
         private int FreeBufferToTheReseau()
         {
-<<<<<<< HEAD
             int tramePlusHauteRecue = 0;
 
             for (int i = 0; i < bufferSize; i++)
@@ -174,14 +148,6 @@ namespace Tp1
             receptionBuffer = new Frame[bufferSize];
 
             return tramePlusHauteRecue;
-=======
-            List<char> result = new List<char>();
-            foreach(KeyValuePair<int, Frame> entry in message)
-            {
-                result.Add(Hamming.Decode(entry.Value.Message));
-            }
-            return Util.ListToString(result);
->>>>>>> 9de5bbd95cf1580a7b4827e1a1c237d4d22f283d
         }
     }
 }
