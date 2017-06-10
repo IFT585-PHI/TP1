@@ -16,11 +16,8 @@ namespace Tp1
             Receiver receiver = new Receiver(ReseauxRecepteur, machineSynchronizer, inputs.BufferSize);
 
             PhysicalSupport support = new PhysicalSupport(machineSynchronizer, transmitter, receiver);
-            int errorsCount = 0;
-            bool errorMaually = false;
-            //AskError(ref errorsCount, ref errorMaually);
+            
             bool insertErrors = Logger.ReadStringChoice("Voulez-vous inserer des erreurs?");
-
 
             Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
             Thread receivierThread = new Thread(() => receiver.Receiving());
