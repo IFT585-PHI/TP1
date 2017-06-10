@@ -36,7 +36,7 @@ namespace Tp1
                 Frame trame = synchronizer.GetMessageFromSource();
                 if(trame.type == Type.Fin)
                 {
-                    Console.WriteLine("Fin de la transmition.");
+                    Logger.WriteMessage("Fin de la transmition.");
                     String s = BuildMessage();
                     File.WriteAllText(outputpa, s);
                     break;
@@ -47,14 +47,12 @@ namespace Tp1
                 Type validationCode;
                 if (!isValid)
                 {
-                 //   Console.WriteLine("Trame " + trame.FrameId + "n'est pas valide.");
-                  //  Console.WriteLine("Envoi Nak trame #" + trame.FrameId + "to support");
+                    Logger.WriteMessage("Trame " + trame.FrameId + "n'est pas valide.");
                     validationCode = Type.Nak;
                 }
                 else
                 {
-                    Console.WriteLine("Trame " + trame.FrameId + "est valide.");
-                    Console.WriteLine("Envoi Ack trame #" + trame.FrameId + "to support");
+                    Logger.WriteMessage("Trame " + trame.FrameId + "est valide.");
                     validationCode = Type.Ack;
                     message[trame.FrameId] = trame;
                 }
