@@ -56,17 +56,6 @@ namespace Tp1
         {
             List<char> byteList = new List<char>(codedData);
 
-            string s = string.Empty;
-
-            foreach (char c in codedData)
-                s += c;
-
-            Util.InjectErrorRandom(ref s);
-            Util.InjectErrorRandom(ref s);
-
-            byteList = new List<char>(s);
-
-
             Char newLastBitValue = CalculateLastBitCorrector(byteList);
             Char oldLastBitValue = byteList.Last();
 

@@ -50,7 +50,7 @@ namespace Tp1
         ///Transfer the current Frame from one machine to the other.
         ///</Summary>
         ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Frame was transfered.</returns>
-        public void TransferTrameToDestination(bool insertError)
+        public void TransferTrameToDestination(ref bool insertError)
         {
             if (!pretEmmetreSource && !recuDestination)
             {
@@ -58,28 +58,31 @@ namespace Tp1
                 {
                     Console.WriteLine("Tramme actuelle: ");
                     Console.WriteLine(envoieSource.Message);
-                    Console.WriteLine("Combien d'erreur souhaitez-vous insérer? ");
-                    int nbError = Int32.Parse(Console.ReadLine());
-                    Console.WriteLine("Voulez-vous inserer aléatoirement ou manuellement? (y/n)");
-                    string r = Console.ReadLine();
-
-                    while (r != "y" && r != "n")
-                        r = Console.ReadLine();
-
-                    if (r == "y")
+                    int nbError = Logger.ReadInt("Combien d'erreurs souhaitez-vous insérer?");
+                    if (nbError > 0)
                     {
-                        for (int i = 0; i < nbError; ++i)
+                        bool rep = Logger.ReadStringChoice("Voulez-vous inserer manuellement?");
+
+                        if (rep)
                         {
-                            Util.InjectErrorRandom(ref envoieSource.Message);
+                            //Manual errors insertion
+                            int max_pos = envoieSource.Message.Length - 1;
+                            for (int i = 0; i < nbError; ++i)
+                            {
+                                int pos = Logger.ReadIntInterval("A quel position voulez-vous inserer?", 0, max_pos);
+                                Util.InjectErrorAtPosition(ref envoieSource.Message, pos);
+                            }
                         }
-                    }
-                    else
-                    {
-
-                    }                   
-                    
-
-
+                        else
+                        {
+                            //Random errors insertion
+                            for (int i = 0; i < nbError; ++i)
+                                Util.InjectErrorRandom(ref envoieSource.Message);
+                        }
+                    }                    
+                    insertError = false;
+                    Console.WriteLine("Tramme finale: ");
+                    Console.WriteLine(envoieSource.Message);
                 }
                     
                 receptionDestionation = envoieSource;

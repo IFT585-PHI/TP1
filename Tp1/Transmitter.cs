@@ -18,7 +18,7 @@ namespace Tp1
 
         public void Transmitting(Inputs input)
         {
-            Console.WriteLine("Transmitting start");
+            Console.WriteLine("\n Transmitting start \n");
             int frameIndex = 0;
             int bufferUsedCellCount = 0;
             bool lastFrameReceived = false;

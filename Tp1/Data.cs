@@ -41,7 +41,7 @@ namespace Tp1
                 Console.WriteLine("BufferSize: " + BufferSize);
                 Console.WriteLine("Delay: " + Delay);
                 Console.WriteLine("Source FileName: " + SourceFileName);
-                Console.WriteLine("Destination FileName: " + DestinationFileName);
+                Console.WriteLine("Destination FileName: " + DestinationFileName + "\n");
             }
             catch (Exception e)
             {

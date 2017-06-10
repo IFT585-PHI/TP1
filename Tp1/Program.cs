@@ -17,30 +17,14 @@ namespace Tp1
 
             PhysicalSupport support = new PhysicalSupport(machineSynchronizer, transmitter, receiver);
 
-            bool insertErrors = AskError();
+            bool insertErrors = Logger.ReadStringChoice("Voulez-vous inserer des erreurs?");
 
             Thread transmitterThread = new Thread(() => transmitter.Transmitting(inputs));
             Thread receivierThread = new Thread(() => receiver.Receiving());
             transmitterThread.Start();
             receivierThread.Start();
 
-            support.Start();
-        }
-
-        static bool AskError()
-        {
-            Console.WriteLine("Voulez-vous inserer des erreurs? (y/n)");
-            string r = Console.ReadLine();
-
-            while (r != "y" && r != "n")
-                r = Console.ReadLine();
-            
-            if (r == "y")
-            {
-                return true;
-            }
-
-            return false;
+            support.Start(insertErrors);
         }
 
     }

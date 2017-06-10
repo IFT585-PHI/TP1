@@ -63,7 +63,7 @@ namespace Tp1
         {
             StringBuilder s = new StringBuilder(codedData);
             s[pos] = ((s[pos] == '0') ? '1' : '0'); ;
-            codedData = s.ToString();
+            codedData = s.ToString(); 
         }
 
         public static void InjectErrorRandom(ref string codedData)
@@ -74,6 +74,21 @@ namespace Tp1
 
             System.Threading.Thread.Sleep(100);
         }
+
+
+        public static void InjectErrorRandom(ref char[] codedData)
+        {
+            Random r = new Random();
+            int ra = r.Next(0, codedData.Length - 1);
+            InjectErrorAtPosition(ref codedData, ra);
+
+            System.Threading.Thread.Sleep(100);
+        }
+        public static void InjectErrorAtPosition(ref char[] codedData, int pos)
+        {
+            codedData[pos] = ((codedData[pos] == '0') ? '1' : '0'); ;
+        }
+
         public static string BinaryToHexa(char[] text)
         {
 
