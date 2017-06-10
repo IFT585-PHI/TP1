@@ -39,6 +39,10 @@ namespace Tp1
 
                 waitForFrame();
                 Frame trame = synchronizer.GetMessageFromSource();
+                if(trame.type == Type.Fin)
+                {
+                    coucheReseaux.GiveNewFrame(trame);
+                }
                 bool isValid = Hamming.Validate(ref trame.Message);
 
                 if (!isValid)
