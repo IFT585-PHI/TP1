@@ -42,16 +42,19 @@ namespace Tp1
                 if(trame.type == Type.Fin)
                 {
                     coucheReseaux.GiveNewFrame(trame);
-                }
-                bool isValid = Hamming.Validate(ref trame.Message);
+                    
+                } else
+                {
+                    bool isValid = Hamming.Validate(ref trame.Message);
 
-                if (!isValid)
-                {
-                    SendInvalideRespone(trame);
-                }
-                else
-                {
-                    SendValidResponse(trame);
+                    if (!isValid)
+                    {
+                        SendInvalideRespone(trame);
+                    }
+                    else
+                    {
+                        SendValidResponse(trame);
+                    }
                 }
             }
         }
