@@ -44,19 +44,16 @@ namespace Tp1
 
                     string encodedMessage = string.Empty;
 
-                    int i = fileContent.Length;
                     if (frameIndex < frameCount)
                     {
                         encodedMessage = Hamming.Encode(fileContent.Substring(frameIndex * 8, 8));
                         frame.Message = encodedMessage.Substring(0, 13).ToCharArray();
                     }
 
-                    int j = encodedMessage.Length;
-
                     frame.type = (frameIndex < frameCount) ? Type.Data : Type.Fin;
 
                     TransmitterBuffer[frameIndex % input.BufferSize] = frame;
-                    //Console.WriteLine(Util.BinaryToHexa(frame.Message));
+
                     while (!synchronizer.TransferTrameToSupportSource(frame)) ;
 
                     Stopwatch frameTimer = new Stopwatch();
