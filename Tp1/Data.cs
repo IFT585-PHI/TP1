@@ -7,7 +7,7 @@ namespace Tp1
     /// </summary>
     public class Frame
     {
-        public char[] Message = new char[8];
+        public char[] Message = new char[13];
         public int FrameId { get; set; }
         public Type type;
     }

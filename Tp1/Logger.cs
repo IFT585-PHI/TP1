@@ -14,7 +14,7 @@ namespace Tp1
         ///<returns> </returns>
         public static void WriteMessage(string message)
         {
-            Console.Write(message);
+            Console.WriteLine(message);
         }
         ///<Summary> 
         ///Display message.

@@ -20,12 +20,13 @@ namespace Tp1
         {
             int frameIndex = 0;
             int bufferUsedCellCount = 0;
+            int lastAckReceivedIndex = -1;
             bool lastFrameReceived = false;
             Frame[] TransmitterBuffer = new Frame[input.BufferSize];
 
             string fileContent = File.ReadAllText(@input.SourceFileName);
 
-            fileContent = Util.ListToBinary(Util.CharToBinary(fileContent));
+            fileContent = Util.ListToString(Util.CharToBinary(fileContent));
 
             int frameCount = fileContent.Length / 8;
             
@@ -43,19 +44,16 @@ namespace Tp1
 
                     string encodedMessage = string.Empty;
 
-                    int i = fileContent.Length;
                     if (frameIndex < frameCount)
                     {
                         encodedMessage = Hamming.Encode(fileContent.Substring(frameIndex * 8, 8));
                         frame.Message = encodedMessage.Substring(0, 13).ToCharArray();
                     }
 
-                    int j = encodedMessage.Length;
-
                     frame.type = (frameIndex < frameCount) ? Type.Data : Type.Fin;
 
                     TransmitterBuffer[frameIndex % input.BufferSize] = frame;
-                    //Console.WriteLine(Util.BinaryToHexa(frame.Message));
+
                     while (!synchronizer.TransferTrameToSupportSource(frame)) ;
 
                     Stopwatch frameTimer = new Stopwatch();
@@ -79,10 +77,14 @@ namespace Tp1
                     else if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
                     {
                         //enlever la trame du buffer
-                        TransmitterBuffer[receivedFrame.FrameId % input.BufferSize] = null;
-                        bufferUsedCellCount--;
-                        framesTimer[receivedFrame.FrameId].Stop();
-                        framesTimer.Remove(receivedFrame.FrameId);
+                        for(int index = receivedFrame.FrameId; index > lastAckReceivedIndex; index--)
+                        {
+                            TransmitterBuffer[index % input.BufferSize] = null;
+                            bufferUsedCellCount--;
+                            framesTimer[index].Stop();
+                            framesTimer.Remove(index);
+                        }
+                        lastAckReceivedIndex = receivedFrame.FrameId;
                     }
                     else if (receivedFrame.type == Type.Nak) //Code de la trame recu
                     {

@@ -58,6 +58,7 @@ namespace Tp1
                 {
                     Logger.WriteMessage("Tramme actuelle: ");
                     Logger.WriteMessage(envoieSource.Message);
+                    Logger.WriteMessage("");
                     int nbError = Logger.ReadInt("Combien d'erreurs souhaitez-vous insérer?");
                     if (nbError > 0)
                     {
@@ -83,6 +84,7 @@ namespace Tp1
                     insertError = false;
                     Logger.WriteMessage("Tramme finale: ");
                     Logger.WriteMessage(envoieSource.Message);
+                    Logger.WriteMessage("");
                 }
                     
                 receptionDestionation = envoieSource;

@@ -8,7 +8,7 @@ namespace Tp1
 {
     public class Hamming
     {
-        /// <param name="data">string of char</param>
+        /// <param name="data">binary string</param>
         /// <returns>binary string</returns> 
         public static string Encode(string data)
         {
@@ -30,12 +30,12 @@ namespace Tp1
             }
             byteList[byteList.Count-1] = CalculateLastBitCorrector(byteList);
 
-            return Util.ListToBinary(byteList);
+            return Util.ListToString(byteList);
         }
 
-        /// <param name="data">binary string</param>
-        /// <returns>string of char</returns> 
-        public static string Decode(char[] codedData)
+        /// <param name="data">char[] of binary</param>
+        /// <returns>char</returns> 
+        public static char Decode(char[] codedData)
         {
             List<char> byteList = new List<char>(codedData);
             List<int> indexBitCorrector = FindAllIndexBitCorrector(byteList);
@@ -48,10 +48,10 @@ namespace Tp1
                 byteList.RemoveAt(i);
             }
 
-            return Util.BinaryToChar(Util.ListToBinary(byteList));
+            return Util.BinaryToChar(Util.ListToString(byteList));
         }
 
-        /// <param name="data">binary string</param>
+        /// <param name="data">char[] in binary</param>
         public static Boolean Validate(ref char[] codedData)
         {
             List<char> byteList = new List<char>(codedData);
@@ -78,8 +78,8 @@ namespace Tp1
                 int indexBadBit = indexBitCorrectorError[0];
                 byteList[indexBadBit] = ((byteList[indexBadBit] == '0') ? '1' : '0');
 
-                for (int i = 0; i < byteList.Count; i++)
-                    codedData[i] = byteList[i];
+                byteList.Add(oldLastBitValue);
+                codedData = byteList.ToArray();
 
                 return true;
             }
@@ -107,8 +107,8 @@ namespace Tp1
                 // we have correctly fixed our error
                 if (oldLastBitValue == newLastBitValue && indexBitCorrectorError.Count == 0)
                 {
-                    for (int i = 0; i < byteList.Count; i++)
-                        codedData[i] = byteList[i];
+                    byteList.Add(newLastBitValue);
+                    codedData = byteList.ToArray();
 
                     return true;
                 }
@@ -136,12 +136,12 @@ namespace Tp1
 
         /*
          * https://en.wikipedia.org/wiki/Hamming_code
-         *      1   2   3   4   5   6   7   8   9   10  11 12 LA
-         * P1   X       X       X       X       X       X
-         * P2       X   X           X   X           X   X
-         * P3               X   X   X   X                   X
-         * P4                               X   X   X   X   X
-         * LA   X   X   X   X   X   X   X   X   X   X   X   X
+         *      1   2   3   4   5   6   7   8  LA
+         * P1   X       X       X       X       
+         * P2       X   X           X   X       
+         * P3               X   X   X   X       
+         * P4                               X  
+         * LA   X   X   X   X   X   X   X   X   
          */
         private static char CalculateBitCorrectorForPos(List<char> byteList, int noBits)
         {
