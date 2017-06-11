@@ -1,27 +1,22 @@
-﻿using System;
-namespace Tp1
+﻿namespace Tp1
 {
     public class InterThreadSynchronizer
     {
-        private  Frame envoieSource;
-        private  Frame receptionDestination;
-        private  bool pretEmmetreSource = true;
-        private  bool recuDestination = false;
+        private  Frame transmitterFrameToPS;
+        private  Frame PSFrameToReceiver;
+        private  bool readyToSendSource = true;
+        private  bool receivedFromDestination = false;
 
-        private Frame envoieDestination;
-        private Frame receptionSource;
-        private bool pretEmmetreDestination= true;
-        private bool recuSource = false;
+        private Frame receiverFrameToPS;
+        private Frame PSFrameToTransmitter;
+        private bool readyToSendDestination= true;
+        private bool receivedFromSource = false;
 
-        ///<Summary> 
-        ///Transfer the current Frame to the support.
-        ///</Summary>
-        ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Frame was transfered.</returns>
-        public bool TransferTrameToSupportSource(Frame trame)
+        public bool TransferTrameToSupportSource(Frame frame)
         {
-            if (pretEmmetreSource){
-                envoieSource = trame;
-                pretEmmetreSource = false;
+            if (readyToSendSource){
+                transmitterFrameToPS = frame;
+                readyToSendSource = false;
                 return true;
             }   else
             {
@@ -29,16 +24,12 @@ namespace Tp1
             }
         }
 
-        ///<Summary> 
-        ///Transfer the current Frame to the support.
-        ///</Summary>
-        ///<returns> False if the support is not ready and the Frame wasn't transfered and True if the Frame was transfered.</returns>
-        public bool TransferTrameToSupportDestination(Frame trame)
+        public bool TransferTrameToSupportDestination(Frame frame)
         {
-            if (pretEmmetreDestination)
+            if (readyToSendDestination)
             {
-                envoieDestination = trame;
-                pretEmmetreDestination = false;
+                receiverFrameToPS = frame;
+                readyToSendDestination = false;
                 return true;
             }
             else
@@ -46,23 +37,20 @@ namespace Tp1
                 return false;
             }
         }
-        ///<Summary> 
-        ///Transfer the current Frame from one machine to the other.
-        ///</Summary>
-        ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Frame was transfered.</returns>
+
         public void TransferTrameToDestination(ref bool insertError)
         {
-            if (!pretEmmetreSource && !recuDestination)
+            if (!readyToSendSource && !receivedFromDestination)
             {
                 Frame f = new Frame();
-                f.Message = (char[])envoieSource.Message.Clone();
-                f.type = envoieSource.type;
-                f.FrameId = envoieSource.FrameId;
-                receptionDestination = f;
+                f.Message = (char[])transmitterFrameToPS.Message.Clone();
+                f.type = transmitterFrameToPS.type;
+                f.FrameId = transmitterFrameToPS.FrameId;
+                PSFrameToReceiver = f;
                 if (insertError)
                 {
-                    Logger.WriteMessage("Trame actuelle: ");
-                    Logger.WriteMessage(receptionDestination.Message);
+                    Logger.WriteMessage("Trame sans erreur: ");
+                    Logger.WriteMessage(PSFrameToReceiver.Message);
                     Logger.WriteMessage("");
                     int nbError = Logger.ReadInt("Combien d'erreurs souhaitez-vous insérer?");
                     if (nbError > 0)
@@ -72,80 +60,60 @@ namespace Tp1
                         if (rep)
                         {
                             //Manual errors insertion
-                            int max_pos = receptionDestination.Message.Length - 1;
+                            int max_pos = PSFrameToReceiver.Message.Length - 1;
                             for (int i = 0; i < nbError; ++i)
                             {
                                 int pos = Logger.ReadIntInterval("A quel position voulez-vous inserer?", 0, max_pos);
-                                Util.InjectErrorAtPosition(ref receptionDestination.Message, pos);
+                                Util.InjectErrorAtPosition(ref PSFrameToReceiver.Message, pos);
                             }
                         }
                         else
                         {
                             //Random errors insertion
                             for (int i = 0; i < nbError; ++i)
-                                Util.InjectErrorRandom(ref receptionDestination.Message);
+                                Util.InjectErrorRandom(ref PSFrameToReceiver.Message);
                         }
                     }                    
                     insertError = false;
-                    Logger.WriteMessage("Trame finale: ");
-                    Logger.WriteMessage(receptionDestination.Message);
+                    Logger.WriteMessage("Trame avec erreur: ");
+                    Logger.WriteMessage(PSFrameToReceiver.Message);
                     Logger.WriteMessage("");
                 }
-                recuDestination = true;
-                pretEmmetreSource = true;
+                receivedFromDestination = true;
+                readyToSendSource = true;
             }
         }
 
-        ///<Summary> 
-        ///Transfer the current Frame from one machine to the other.
-        ///</Summary>
-        ///<returns> False if the transfer wasn't reay and the Frame wasn't transfered and True if the Frame was transfered.</returns>
         public void TransferTrameToSource()
         {
-            if (!pretEmmetreDestination && !recuSource)
+            if (!readyToSendDestination && !receivedFromSource)
             {
-                receptionSource = envoieDestination;
-                recuSource = true;
-                pretEmmetreDestination = true;
+                PSFrameToTransmitter = receiverFrameToPS;
+                receivedFromSource = true;
+                readyToSendDestination = true;
             }
         }
 
-        ///<Summary>
-        ///Check to see if there is something to be recieved.
-        ///</Summary>
-        ///<returns> False there is nothing and True if we can read something.</returns>
         public bool ReadyToReadSourceMessage()
         {
-            return recuDestination;
+            return receivedFromDestination;
         }
 
-        ///<Summary>
-        ///Check to see if there is something to be recieved.
-        ///</Summary>
-        ///<returns> False there is nothing and True if we can read something.</returns>
         public bool ReadyToReadDestinationMessage()
         {
-            return recuSource;
+            return receivedFromSource;
         }
 
-        ///<Summary> 
-        ///Reads the Frame that was recieved.
-        ///</Summary>
-        ///<returns> The Frame that was recieved.</returns>
         public Frame GetMessageFromSource()
         {
-            recuDestination = false;
-            return receptionDestination;
+            receivedFromDestination = false;
+            return PSFrameToReceiver;
         }
 
-        ///<Summary> 
-        ///Reads the Frame that was recieved.
-        ///</Summary>
-        ///<returns> The Frame that was recieved.</returns>
         public Frame GetMessageFromDestination()
         {
-            recuSource = false;
-            return receptionSource;
+            receivedFromSource = false;
+            return PSFrameToTransmitter;
         }
     }
 }

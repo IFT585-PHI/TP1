@@ -4,12 +4,12 @@ using System.IO;
 
 namespace Tp1
 {
-    class ReseauxRecepteur
+    class NetworkReceiver
     {
         List<Frame> message;
         string outputPath;
 
-        public ReseauxRecepteur(string outputPath)
+        public NetworkReceiver(string outputPath)
         {
             message = new List<Frame>();
             this.outputPath = outputPath;

@@ -12,7 +12,7 @@ namespace Tp1
             InterThreadSynchronizer machineSynchronizer = new InterThreadSynchronizer();
 
             Transmitter transmitter = new Transmitter(machineSynchronizer);
-            ReseauxRecepteur ReseauxRecepteur = new ReseauxRecepteur(inputs.DestinationFileName);
+            NetworkReceiver ReseauxRecepteur = new NetworkReceiver(inputs.DestinationFileName);
             Receiver receiver = new Receiver(ReseauxRecepteur, machineSynchronizer, inputs.BufferSize);
 
             PhysicalSupport support = new PhysicalSupport(machineSynchronizer, transmitter, receiver);

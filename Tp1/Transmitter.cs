@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Collections.Generic;
 
@@ -74,10 +73,11 @@ namespace Tp1
                     {
                         lastFrameReceived = true;
                     }
-                    else if (receivedFrame.type == Type.Ack)//Code de la trame recu == ACk
+                    else if (receivedFrame.type == Type.Ack)
                     {
-                        //enlever la trame du buffer
-                        for(int index = receivedFrame.FrameId; index > lastAckReceivedIndex; index--)
+                        Logger.WriteMessage("ACK recu de la trame " + receivedFrame.FrameId.ToString());
+
+                        for (int index = receivedFrame.FrameId; index > lastAckReceivedIndex; index--)
                         {
                             TransmitterBuffer[index % input.BufferSize] = null;
                             bufferUsedCellCount--;
@@ -86,9 +86,10 @@ namespace Tp1
                         }
                         lastAckReceivedIndex = receivedFrame.FrameId;
                     }
-                    else if (receivedFrame.type == Type.Nak) //Code de la trame recu
+                    else if (receivedFrame.type == Type.Nak)
                     {
-                        //Renvoyer la trame en erreur
+                        Logger.WriteMessage("NAK recu de la trame " + receivedFrame.FrameId.ToString());
+
                         while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[receivedFrame.FrameId % input.BufferSize])) ;
 
                         framesTimer[receivedFrame.FrameId].Reset();
@@ -99,7 +100,8 @@ namespace Tp1
                 {
                     if(timer.Value.ElapsedMilliseconds >= input.Delay)
                     {
-                        //Renvoyer la trame
+                        Logger.WriteMessage("Delai depasser pour la trame " + timer.Key.ToString());
+
                         while (synchronizer.TransferTrameToSupportSource(TransmitterBuffer[timer.Key % input.BufferSize])) ;
                         timer.Value.Reset();
                         timer.Value.Start();
