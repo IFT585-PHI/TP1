@@ -4,7 +4,7 @@ namespace Tp1
     public class InterThreadSynchronizer
     {
         private  Frame envoieSource;
-        private  Frame receptionDestionation;
+        private  Frame receptionDestination;
         private  bool pretEmmetreSource = true;
         private  bool recuDestination = false;
 
@@ -54,10 +54,15 @@ namespace Tp1
         {
             if (!pretEmmetreSource && !recuDestination)
             {
+                Frame f = new Frame();
+                f.Message = (char[])envoieSource.Message.Clone();
+                f.type = envoieSource.type;
+                f.FrameId = envoieSource.FrameId;
+                receptionDestination = f;
                 if (insertError)
                 {
-                    Logger.WriteMessage("Tramme actuelle: ");
-                    Logger.WriteMessage(envoieSource.Message);
+                    Logger.WriteMessage("Trame actuelle: ");
+                    Logger.WriteMessage(receptionDestination.Message);
                     Logger.WriteMessage("");
                     int nbError = Logger.ReadInt("Combien d'erreurs souhaitez-vous insérer?");
                     if (nbError > 0)
@@ -67,27 +72,25 @@ namespace Tp1
                         if (rep)
                         {
                             //Manual errors insertion
-                            int max_pos = envoieSource.Message.Length - 1;
+                            int max_pos = receptionDestination.Message.Length - 1;
                             for (int i = 0; i < nbError; ++i)
                             {
                                 int pos = Logger.ReadIntInterval("A quel position voulez-vous inserer?", 0, max_pos);
-                                Util.InjectErrorAtPosition(ref envoieSource.Message, pos);
+                                Util.InjectErrorAtPosition(ref receptionDestination.Message, pos);
                             }
                         }
                         else
                         {
                             //Random errors insertion
                             for (int i = 0; i < nbError; ++i)
-                                Util.InjectErrorRandom(ref envoieSource.Message);
+                                Util.InjectErrorRandom(ref receptionDestination.Message);
                         }
                     }                    
                     insertError = false;
-                    Logger.WriteMessage("Tramme finale: ");
-                    Logger.WriteMessage(envoieSource.Message);
+                    Logger.WriteMessage("Trame finale: ");
+                    Logger.WriteMessage(receptionDestination.Message);
                     Logger.WriteMessage("");
                 }
-                    
-                receptionDestionation = envoieSource;
                 recuDestination = true;
                 pretEmmetreSource = true;
             }
@@ -132,7 +135,7 @@ namespace Tp1
         public Frame GetMessageFromSource()
         {
             recuDestination = false;
-            return receptionDestionation;
+            return receptionDestination;
         }
 
         ///<Summary> 

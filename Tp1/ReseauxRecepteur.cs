@@ -21,7 +21,7 @@ namespace Tp1
             {
                 SignalEndOfTransmission();
             } else {
-                Console.WriteLine("Transmission de la trame" + newFrame.FrameId + " à la couche réseau.");
+                Console.WriteLine("Transmission de la trame " + newFrame.FrameId + " à la couche réseau.");
                 message.Add(newFrame);
             }
         }

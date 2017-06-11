@@ -11,10 +11,11 @@ namespace Tp1
     {
         StreamWriter sw;
         InterThreadSynchronizer synchronizer;
-        SortedDictionary<int, Frame> message;
+        List<Frame> message;
         ReseauxRecepteur coucheReseaux;
         Frame[] receptionBuffer;
         int NakSeqNum = -1;
+        int lastAck = -1;
         int bufferSize;
 
 
@@ -24,7 +25,7 @@ namespace Tp1
             this.synchronizer = synchronizer;
             this.bufferSize = bufferSize;
 
-            message = new SortedDictionary<int, Frame>();
+            message = new List<Frame>();
             receptionBuffer = new Frame[bufferSize];
         }
 
@@ -39,22 +40,45 @@ namespace Tp1
 
                 waitForFrame();
                 Frame trame = synchronizer.GetMessageFromSource();
-                if(trame.type == Type.Fin)
+                if (trame.type == Type.Fin)
                 {
                     coucheReseaux.GiveNewFrame(trame);
-                    
-                } else
+
+                }
+                else
                 {
                     bool isValid = Hamming.Validate(ref trame.Message);
 
                     if (!isValid)
                     {
-                        SendInvalideRespone(trame);
+                        //NakSeqNum = trame.FrameId;
+                        SendToSource(trame.FrameId, Type.Nak);
                     }
                     else
                     {
-                        coucheReseaux.GiveNewFrame(trame);
-                        SendValidResponse(trame);
+                        if (lastAck + 1 != trame.FrameId)
+                        {
+                            message.Add(trame);
+                        }
+                        else
+                        {
+                            coucheReseaux.GiveNewFrame(trame);
+
+                            while (message.Count != 0)
+                            {
+                                if (Hamming.Validate(ref message[0].Message))
+                                {
+                                    coucheReseaux.GiveNewFrame(message[0]);
+                                    message.RemoveAt(0);
+                                }
+                                else
+                                {
+                                    SendToSource(message[0].FrameId, Type.Nak);
+                                }
+                            }
+                            SendToSource(trame.FrameId, Type.Ack);
+                            lastAck = trame.FrameId;
+                        }
                     }
                 }
             }
@@ -62,9 +86,7 @@ namespace Tp1
 
         private void waitForFrame()
         {
-            while (!synchronizer.ReadyToReadSourceMessage())
-            {
-            }
+            while (!synchronizer.ReadyToReadSourceMessage()) ;
         }
 
         private void SendToSource(int numSeq, Type type)
@@ -72,73 +94,16 @@ namespace Tp1
             Frame trame = new Tp1.Frame();
             trame.FrameId = numSeq;
             trame.type = type;
-            while (!synchronizer.TransferTrameToSupportDestination(trame))
-            {
-            }
+            while (!synchronizer.TransferTrameToSupportDestination(trame)) ;
         }
 
         private void SendInvalideRespone(Frame trame)
         {
             NakSeqNum = trame.FrameId;
-            SendToSource(NakSeqNum, Type.Nak );
+            SendToSource(NakSeqNum, Type.Nak);
 
             Console.WriteLine("Trame " + trame.FrameId + "n'est pas valide.");
             Console.WriteLine("Envoi Nak trame #" + trame.FrameId + "to support");
-        }
-
-        private void SendValidResponse(Frame trame)
-        {
-
-            if (NakSeqNum < 0)
-            {
-                SendAckOfCurrentFrame(trame);
-            }
-            else if (trame.FrameId == NakSeqNum)
-            {
-                SendAckWhenNakFrameIsValid(trame);
-            }
-            else
-            {
-                SendAckOfLastValidFrameBeforeNak(trame);
-
-            }
-        }
-
-        private void SendAckOfCurrentFrame(Frame trame)
-        {
-            SendToSource(trame.FrameId, Type.Ack);
-
-            Console.WriteLine("Trame " + trame.FrameId + "est valide.");
-            Console.WriteLine("Envoi Ack trame #" + trame.FrameId + "to support");
-        }
-
-        private void SendAckWhenNakFrameIsValid(Frame trame)
-        {
-            int tramePlusHauteRecue = FreeBufferToTheReseau();
-
-            NakSeqNum = -1;
-            SendToSource(tramePlusHauteRecue , Type.Ack);
-
-            Console.WriteLine("Trame " + NakSeqNum + "reçu, transmission à la couche réseaux.");
-        }
-
-        private void SendAckOfLastValidFrameBeforeNak(Frame trame)
-        {
-            int sqNum = 0;
-
-            if (NakSeqNum == 0)
-            {
-                sqNum = 8;
-            }
-            else
-            {
-                sqNum = NakSeqNum - 1;
-            }
-            receptionBuffer[trame.FrameId] = trame;
-            SendToSource(sqNum, Type.Ack);
-
-            Console.WriteLine("Trame " + trame.FrameId + "est valide.");
-            Console.WriteLine("Trame " + NakSeqNum + "est encore manquante.");
         }
 
         private int FreeBufferToTheReseau()
